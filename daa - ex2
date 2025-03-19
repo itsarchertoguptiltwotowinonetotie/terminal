@@ -1,0 +1,165 @@
+Script started on Thursday 06 February 2025 03:53:06 PM IST
+[23bcs112@mepcolinux ex2]$cat stringsearch.c
+#include<stdio.h>
+#include<stdlib.h>
+void print(char *pattern,int i)
+{
+   int j;
+   for(j=0;j<i;j++)
+      printf(" ");
+   printf("%s",pattern);
+   printf("\n");
+}
+int StringSearch(char *text,int n,char *pattern,int m)
+{
+   int i,j;
+   for(i=0;i<=n-m;i++)
+   {
+      print(pattern,i);
+      j=0;
+      while(j<m && pattern[j]==text[i+j])
+      {
+         j++;
+      }
+      if(j==m)
+         return i;
+   }
+   return -1;
+}
+int main()
+{
+   int i,val;
+   char *text=(char*)malloc(100*sizeof(char));
+   printf("Enter the text:");
+   gets(text);
+   text=(char*)realloc(text,sizeof(text)+1);
+   char *pattern=(char*)malloc(100*sizeof(char));
+   printf("Enter the pattern:");
+   gets(pattern);
+   pattern=(char*)realloc(pattern,sizeof(pattern)+1);
+   printf("%s\n",text);
+   val=StringSearch(text,strlen(text),pattern,strlen(pattern));
+   if(val==-1)
+      printf("No match found\n");
+   else
+      printf("Substring is present and its starting index is %d\n",val);
+}
+[23bcs112@mepcolinux ex2]$cc stringsearch.c
+[23bcs112@mepcolinux ex2]$./a.out
+Enter the text:hello world guys
+Enter the pattern:worl
+hello world guys
+worl
+ worl
+  worl
+   worl
+    worl
+     worl
+      worl
+Substring is present and its starting index is 6
+[23bcs112@mepcolinux ex2]$./a.out
+Enter the text:10101001110101010001010110101011101010100010101101
+Enter the pattern:1011101
+101010011101010100010101Q
+1011101
+ 1011101
+  1011101
+   1011101
+    1011101
+     1011101
+      1011101
+       1011101
+        1011101
+         1011101
+          1011101
+           1011101
+            1011101
+             1011101
+              1011101
+               1011101
+                1011101
+                 1011101
+                  1011101
+No match found
+[23bcs112@mepcolinux ex2]$./a.out
+Enter the text:nisaaandh
+Enter the pattern:ssn
+nisaaandh
+ssn
+ ssn
+  ssn
+   ssn
+    ssn
+     ssn
+      ssn
+No match found
+[23bcs112@mepcolinux ex2]$./a.out
+Enter the text:nisssssaaaannnndh
+Enter the pattern:saa
+nisssssaaaannnndh
+saa
+ saa
+  saa
+   saa
+    saa
+     saa
+      saa
+Substring is present and its starting index is 6
+[23bcs112@mepcolinux ex2]$cat closestpair.c
+#include<stdio.h>
+#include<math.h>
+struct point{
+   float x;
+   float y;
+};
+float FindClosest(int n,struct point pt[],struct point closest[])
+{
+   int i,j;
+   float min=9999,distance;
+   for(i=0;i<n-1;i++)
+   {
+      for(j=i+1;j<n;j++)
+      {
+         distance=sqrt(pow(pt[i].x-pt[j].x,2)+pow(pt[i].y-pt[j].y,2));
+         if(distance<min)
+         {
+            min=distance;
+            closest[0]=pt[i];
+            closest[1]=pt[j];
+         }
+      }
+   }
+   return min;
+}
+int main()
+{
+   int i,n;
+   float min_dis;
+   printf("Enter the number of points:");
+   scanf("%d",&n);
+   struct point pt[n];
+   struct point closest[2];
+   printf("Enter the points as x,y pairs:\n");
+   for(i=0;i<n;i++)
+   {
+      printf("point %d:",i+1);
+      scanf("%f%f",&pt[i].x,&pt[i].y);
+      min_dis = FindClosest(n,pt,closest);
+   }
+   printf("The minimum distance between the points is %.2f\n",min_dis);
+   printf("The minimum distance is between points (%.2f,%.2f) and (%.2f,%.2f)\n",closest[0].x,closest[0].y,closest[1].x,closest[1].y);
+   return 0;
+}
+[23bcs112@mepcolinux ex2]$cc closestpair.c -lm
+[23bcs112@mepcolinux ex2]$./a.out
+Enter the number of points:3
+Enter the points as x,y pairs:
+point 1:1
+2
+point 2:3
+4
+point 3:5
+6
+The minimum distance between the points is 2.83
+The minimum distance is between points (1.00,2.00) and (3.00,4.00)
+[23bcs112@mepcolinux ex2]$exit
