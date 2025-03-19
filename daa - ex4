@@ -1,0 +1,129 @@
+Script started on Thursday 06 March 2025 04:24:02 PM IST
+[23bcs112@mepcolinux ex4]$cat insert.c
+#include <stdio.h>
+
+// Function to perform Insertion Sort and display each pass
+void InsertionSort(int A[], int n) {
+    for (int i = 1; i < n; i++) {
+        int u = A[i]; // Store the current element
+        int j = i - 1;
+
+        // Move elements that are greater than u one position ahead
+        while (j >= 0 && A[j] > u) {
+            A[j + 1] = A[j];
+            j--;
+        }
+        A[j + 1] = u; // Insert the element at the correct position
+
+        // Print array after each pass
+        printf("Pass %d: ", i);
+        for (int k = 0; k < n; k++) {
+            printf("%d ", A[k]);
+        }
+        printf("\n");
+    }
+}
+
+// Main function
+int main() {
+    int n;
+
+    // Input size of the array
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+
+    int A[n]; // Declare array of size n
+
+    // Input array elements
+    printf("Enter the elements:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &A[i]);
+    }
+
+    // Perform Insertion Sort
+    printf("\nSorting process:\n");
+    InsertionSort(A, n);
+
+    // Output the final sorted array
+    printf("\nFinal sorted array:\n");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", A[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
+
+[23bcs112@mepcolinux ex4]$cc insert.c -std=gnu99
+[23bcs112@mepcolinux ex4]$./a.out
+Enter the number of elements: 8
+Enter the elements:
+7
+10
+15
+2
+3
+1
+18
+4
+
+Sorting process:
+Pass 1: 7 10 15 2 3 1 18 4
+Pass 2: 7 10 15 2 3 1 18 4
+Pass 3: 2 7 10 15 3 1 18 4
+Pass 4: 2 3 7 10 15 1 18 4
+Pass 5: 1 2 3 7 10 15 18 4
+Pass 6: 1 2 3 7 10 15 18 4
+Pass 7: 1 2 3 4 7 10 15 18
+
+Final sorted array:
+1 2 3 4 7 10 15 18
+[23bcs112@mepcolinux ex4]$cc heap.c -std=gnu99
+[23bcs112@mepcolinux ex4]$./a.out
+Enter the number of elements in the heap: 8
+Enter the elements:
+7
+10
+15
+2
+3
+1
+18
+4
+Heap constructed:
+1 2 7 4 3 15 18 10
+Deleting minimum elements from the heap:
+Deleted: 1
+2 3 7 4 10 15 18
+Deleted: 2
+3 4 7 18 10 15
+Deleted: 3
+4 10 7 18 15
+Deleted: 4
+7 10 15 18
+Deleted: 7
+10 18 15
+Deleted: 10
+15 18
+Deleted: 15
+18
+Deleted: 18
+Heap is now empty.
+[23bcs112@mepcolinux ex4]$cc bin.c -std=gnu99
+[23bcs112@mepcolinux ex4]$./a.out
+Enter the number of elements: 10
+Enter 10 integers:
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+Enter the key to search:2
+Element is present at index 1
+[23bcs112@mepcolinux ex4]$exit
+exit
