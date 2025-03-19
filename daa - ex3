@@ -1,0 +1,120 @@
+Script started on Thursday 06 March 2025 04:29:24 PM IST
+[23bcs112@mepcolinux ex3]$cat pr1.c
+#include <stdio.h>
+void swap(int* a, int* b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+void print_array(int A[], int size) {
+    int i;
+    for (i = 0; i < size; i++) {
+        printf("%d ", A[i]);
+    }
+    printf("\n");
+}
+int partition(int A[], int low, int high) {
+    int pivot = A[low],i = low + 1,j = high;
+    while (i <= j) {
+        while (i <= high && A[i] <= pivot) {
+            i++;
+        }
+        while (A[j] > pivot) {
+            j--;
+        }
+        if (i < j) {
+            swap(&A[i], &A[j]);
+            printf("Array after swap:    ");
+            print_array(A, high + 1);
+        }
+    }
+    swap(&A[low], &A[j]);
+    printf("Array after pivot swap:      ");
+    print_array(A, high + 1);
+    return j;
+}
+void quick_sort(int A[], int low, int high) {
+    int pivot_index;
+    if (low < high) {
+        pivot_index = partition(A, low, high);
+        quick_sort(A, low, pivot_index - 1);
+        quick_sort(A, pivot_index + 1, high);
+    }
+}
+
+int main() {
+    int n, i;
+    printf("Enter the number of elements: ");
+    scanf("%d", &n);
+    int A[n];
+    printf("Enter the elements of the array: ");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &A[i]);
+    }
+    printf("Original array:              ");
+    print_array(A, n);
+    quick_sort(A, 0, n - 1);
+    printf("Sorted array:                ");
+    print_array(A, n);
+
+    return 0;
+}
+
+[23bcs112@mepcolinux ex3]$cc pr1.c
+[23bcs112@mepcolinux ex3]$./a.out
+Enter the number of elements: 8
+Enter the elements of the array: 50
+45
+30
+60
+55
+80
+35
+20
+Original array:              50 45 30 60 55 80 35 20
+Array after swap:    50 45 30 20 55 80 35 60
+Array after swap:    50 45 30 20 35 80 55 60
+Array after pivot swap:      35 45 30 20 50 80 55 60
+Array after swap:    35 20 30 45
+Array after pivot swap:      30 20 35 45
+Array after pivot swap:      20 30
+Array after pivot swap:      20 30 35 45 50 60 55 80
+Array after pivot swap:      20 30 35 45 50 55 60
+Sorted array:                20 30 35 45 50 55 60 80
+[23bcs112@mepcolinux ex3]$cc pr2.c
+[23bcs112@mepcolinux ex3]$./a.out
+Enter the number of elements: 8
+Enter 8 elements: 10
+50
+3
+15
+27
+19
+8
+1
+
+Split array with min and max
+Subarray:[10]|Min:10|Max:10
+Subarray:[50]|Min:50|Max:50
+Subarray: 10 50
+Min: 10 | Max: 50
+Subarray:[3]|Min:3|Max:3
+Subarray:[15]|Min:15|Max:15
+Subarray: 3 15
+Min: 3 | Max: 15
+Subarray: 10 50 3 15
+Min: 3 | Max: 50
+Subarray:[27]|Min:27|Max:27
+Subarray:[19]|Min:19|Max:19
+Subarray: 27 19
+Min: 19 | Max: 27
+Subarray:[8]|Min:8|Max:8
+Subarray:[1]|Min:1|Max:1
+Subarray: 8 1
+Min: 1 | Max: 8
+Subarray: 27 19 8 1
+Min: 1 | Max: 27
+Subarray: 10 50 3 15 27 19 8 1
+Min: 1 | Max: 50
+[23bcs112@mepcolinux ex3]$exit
+exit
