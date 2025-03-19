@@ -48,6 +48,59 @@ The given values of a or n is negative, please re-enter inputs
 Enter a : 3
 Enter n : 2
 3^2 is 9
+[23bcs112@mepcolinux ex1]$cat b.c
+#include<stdio.h>
+#include<stdlib.h>
+void print(int *A,int n)
+{
+   int i;
+   for(i=0;i<n;i++)
+   {
+      printf("%d ",A[i]);
+   }
+}
+void SelectionSort(int *A,int n)
+{
+   int temp,i,j,min;
+   for(i=0;i<=n-2;i++)
+   {
+      min=i;
+      for(j=i+1;j<=n-1;j++)
+      {
+         if(A[min]>A[j])
+            min=j;
+      }
+      temp=A[i];
+      A[i]=A[min];
+      A[min]=temp;
+      printf("pass %d :",i+1);
+      print(A,n);
+      printf("\n");
+   }
+}
+int main()
+{
+   int i,n;
+   while(1)
+   {
+      printf("Enter the number of elements:");
+      scanf("%d",&n);
+      if(n<0)
+         printf("The count must be positive");
+      else
+         break;
+   }
+   int *A=(int*)malloc(n*sizeof(int));
+   printf("Enter the values one by one :\n");
+   for(i=0;i<n;i++)
+   {
+       scanf("%d",&A[i]);
+   }
+   SelectionSort(A,n);
+   printf("The final sorted array \n");
+   print(A,n);
+   return 0;
+}
 [23bcs112@mepcolinux ex1]$gcc b.c
 [23bcs112@mepcolinux ex1]$./a.out
 Enter the number of elements:7
