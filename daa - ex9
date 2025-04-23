@@ -1,0 +1,60 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <stdbool.h>
+
+int *x;
+
+bool place(int k, int i, int n);
+void print_x(int[], int);
+void Nqueen(int k, int n);
+
+bool place(int k, int i, int n) {
+    for (int j = 0; j < k; j++) {
+
+        if (x[j] == i || abs(x[j] - i) == abs(j - k)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void Nqueen(int k, int n) {
+    for (int i = 0; i < n; i++) {
+        if (place(k, i, n)) {
+            x[k] = i;
+            if (k == n - 1) {
+                print_x(x, n);
+            } else {
+                Nqueen(k + 1, n);
+            }
+        }
+    }
+}
+
+void print_x(int x[], int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            if (x[i] == j) {
+                printf("Q ");
+            } else {
+                printf("_ ");
+            }
+        }
+        printf("\n");
+    }
+    printf("++++++++++++++++++++++++\n");
+}
+
+int main() {
+    int n;
+    printf("Enter the size of the board (n): ");
+    scanf("%d", &n);
+
+    x = (int *)malloc(n * sizeof(int));
+    Nqueen(0, n);
+
+    free(x);
+    return 0;
+}
+[23bcs099@mepcolinux ex9]$
