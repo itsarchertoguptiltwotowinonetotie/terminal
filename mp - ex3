@@ -1,0 +1,181 @@
+[23bcs112@mepcolinux ex3]$cat ex3.prn
+Script started on Fri 14 Mar 2025 04:41:47 PM IST
+[23bcs112@mepcolinux ex3]$cat ex3.txt
+                   EXERCISE - 3 :  PATTERN, FILES, STRING COMPARE IN masm
+
+DATE : 24/01/2025
+=================================================================================
+NAME :  SIVA PRAKASH S, 23BCS118
+        POTHIRAJU P V, 23BCS112
+=================================================================================
+
+CODE SEGMENT
+        ASSUME CS:CODE
+        MOV AH,02H
+        MOV DH,05H
+        MOV DL,05H
+        MOV BH,00H
+        INT 10H
+        MOV AH,0AH
+        MOV AL,'P'
+        MOV CX,0004H
+        INT 10H
+        MOV AH,02H
+        MOV DH,06H
+        MOV DL,05H
+        MOV BH,00H
+        INT 10H
+        MOV AH,0AH
+        MOV AL,'P'
+        MOV CX,0001H
+        INT 10H
+        MOV AH,02H
+        MOV DH,06H
+        MOV DL,08H
+        MOV BH,00H
+        INT 10H
+        MOV AH,0AH
+        MOV AL,'P'
+        MOV CX,0001H
+        INT 10H
+        MOV AH,02H
+        MOV DH,07H
+        MOV DL,05H
+        MOV BH,00H
+        INT 10H
+        MOV AH,0AH
+        MOV AL,'P'
+        MOV CX,0004H
+        INT 10H
+        MOV AH,02H
+        MOV DH,08H
+        MOV DL,05H
+        MOV BH,00H
+        INT 10H
+        MOV AH,0AH
+        MOV AL,'P'
+        MOV CX,0001H
+        INT 10H
+        MOV AH,02H
+        MOV DH,09H
+        MOV DL,05H
+        MOV BH,00H
+        INT 10H
+        MOV AH,0AH
+        MOV AL,'P'
+        MOV CX,0001H
+        INT 10H
+        MOV AH,4CH
+        INT 21H
+CODE ENDS
+END
+-------------------------------------------------
+DATA SEGMENT
+MSG DB "SAVE"
+FILE DB "ODI.txt"
+COUNT DW 0004H
+READ DB "    $"
+DATA ENDS
+
+CODE SEGMENT
+        ASSUME CS:CODE,DS:DATA
+        MOV AX,DATA
+        MOV DS,AX
+        MOV AH,3DH
+        MOV AL,01H
+        MOV DX,OFFSET FILE
+        INT 21H
+        MOV BX,AX
+        MOV AH,40H
+        MOV CX,COUNT
+        MOV DX,OFFSET MSG
+        INT 21H
+        MOV AH,3EH
+        INT 21H
+        MOV AH,3EH
+        INT 21H
+        MOV AH,3DH
+        MOV AL,00H
+        MOV DX,OFFSET FILE
+        INT 21H
+        MOV BX,AX
+        MOV AH,3FH
+        MOV CX,COUNT
+        MOV DX,OFFSET READ
+        INT 21H
+        MOV AH,09H
+        MOV DX,OFFSET READ
+        INT 21H
+        MOV AH,4CH
+        INT 21H
+CODE ENDS
+END
+--------------------------------------------
+DATA SEGMENT
+FILENAME DB "F1"
+STR1 DB "XYZ"
+STR2 DB "G"
+COUNT DB 03H
+RESULT DB 00H
+MSG1 DB "GREATER$"
+COUNT1 DW 0007H
+MSG2 DB "LESSER$"
+COUNT2 DW 0006H
+MSG3 DB "EQUAL$"
+COUNT3 DW 0005H
+DATA ENDS
+
+CODE SEGMENT
+    ASSUME CS:CODE, DS:DATA,ES:DATA
+        MOV AX, DATA
+        MOV DS, AX
+        MOV ES, AX
+
+        MOV AH, 3DH
+        MOV AL, 02H
+        MOV DX, OFFSET FILENAME
+        INT 21H
+
+        LEA SI, STR1
+        LEA DI, STR2
+        MOV CL, COUNT
+
+REPEAT: MOV AL, [SI]
+        CMP AL, [DI]
+        JZ L1
+        JS L2
+        JMP L3
+
+L1:     INC SI
+        INC DI
+        DEC CL
+        JNZ REPEAT
+        MOV AH, 40H
+        MOV CX, COUNT3
+        MOV DX, OFFSET MSG3
+        JMP EXIT
+
+L2:     MOV AH, 40H
+        MOV CX, COUNT2
+        MOV DX, OFFSET MSG2
+        JMP EXIT
+
+L3:      MOV AH, 40H
+        MOV CX, COUNT1
+        MOV DX, OFFSET MSG1
+        JMP EXIT
+
+EXIT:   INT 21H
+        MOV AH, 3EH
+        INT 21H
+        MOV AH, 4CH
+        INT 21H
+CODE ENDS
+END
+
+
+[23bcs112@mepcolinux ex3]$exit
+exit
+
+Script done on Fri 14 Mar 2025 04:41:54 PM IST
+[23bcs112@mepcolinux ex3]$cd ..
