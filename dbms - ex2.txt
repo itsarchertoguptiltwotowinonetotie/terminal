@@ -1,0 +1,796 @@
+[23bcs112@mepcolinux dbms]$cat ex2.prn
+Script started on Wed 11 Feb 2025 04:28:52 PM IST
+[23bcs112@mepcolinux dbms]$cat ex2.txt
+                                                DDL COMMANDS
+----------------------------------------------------------------------------------------------------------------
+NAME    : POTHIRAJU PV
+ROLL NO : 23BCS112
+================================================================================================================
+-- Picked Table
+CREATE TABLE picked (
+    fantasy_id VARCHAR2(255),
+    player_id VARCHAR2(255),
+    FOREIGN KEY (fantasy_id) REFERENCES fantasy_11(fantasy_id),
+    FOREIGN KEY (player_id) REFERENCES player(player_id)
+);
+=================================================================================================================
+-- Credit Table
+CREATE TABLE credit (
+    credit_id VARCHAR2(255) PRIMARY KEY,
+    "100_c" NUMBER,
+    "50_c" NUMBER,
+    runs_c NUMBER,
+    wickets_c NUMBER,
+    "4_c" NUMBER,
+    "6_c" NUMBER,
+    catch_c NUMBER,
+    run_out_c NUMBER,
+    stumping_c NUMBER
+);
+=================================================================================================================
+-- Balls Table
+CREATE TABLE balls (
+    ball_id VARCHAR2(255) PRIMARY KEY,
+    ball_speed NUMBER,
+    runs NUMBER,
+    wicket VARCHAR2(255),
+    time TIMESTAMP,
+    extra_id VARCHAR2(255),
+    FOREIGN KEY (extra_id) REFERENCES extras(extra_id)
+);
+=================================================================================================================
+-- Extras Table
+CREATE TABLE extras (
+    extra_id VARCHAR2(255) PRIMARY KEY,
+    type VARCHAR2(255),
+    illegal NUMBER,
+    legal NUMBER,
+    runs NUMBER,
+    wickets NUMBER
+);
+=================================================================================================================
+-- Scorecard Table
+CREATE TABLE scorecard (
+    time TIMESTAMP PRIMARY KEY,
+    balls_b NUMBER,
+    balls NUMBER,
+    b_id VARCHAR2(255),
+    runrate NUMBER,
+    runs_given NUMBER,
+    runs NUMBER,
+    wickets NUMBER
+);
+=================================================================================================================
+-- Overlay Table
+CREATE TABLE overlay (
+    time TIMESTAMP PRIMARY KEY,
+    striker VARCHAR2(255),
+    non_striker VARCHAR2(255),
+    total NUMBER,
+    bowler VARCHAR2(255),
+    wickets NUMBER,
+    overs NUMBER,
+    powerplay VARCHAR2(255),
+    highlight VARCHAR2(255),
+    total_overs NUMBER,
+    run_rate NUMBER,
+    notification_id VARCHAR2(255),
+    ball_id VARCHAR2(255),
+    FOREIGN KEY (notification_id) REFERENCES notification(notification_id),
+    FOREIGN KEY (ball_id) REFERENCES balls(ball_id)
+);
+=================================================================================================================
+-- Create table for ratings
+CREATE TABLE ratings (
+    rating_id NUMBER PRIMARY KEY,
+    customer_id NUMBER,
+    rating_provided NUMBER,
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
+);
+=================================================================================================================
+=================================================================================================================
+-- Create table for coaches
+CREATE TABLE coaches (
+    coach_id NUMBER PRIMARY KEY,
+    coach_name VARCHAR2(255),
+    team_id NUMBER,
+    FOREIGN KEY (team_id) REFERENCES teams(team_id)
+);
+=================================================================================================================
+-- Notification Table
+CREATE TABLE notification (
+    notification_id VARCHAR2(255) PRIMARY KEY,
+    domain VARCHAR2(255),
+    notification_team VARCHAR2(255),
+    notification_type VARCHAR2(255)
+);
+=================================================================================================================
+-- Batsman Table
+CREATE TABLE batsman (
+    batsman_id VARCHAR2(255) PRIMARY KEY,
+    runs NUMBER,
+    balls NUMBER,
+    "4s" NUMBER,
+    "6s" NUMBER
+);
+=================================================================================================================
+-- Bowler Table
+CREATE TABLE bowler (
+    bowler_id VARCHAR2(255) PRIMARY KEY,
+    wickets NUMBER,
+    runs_conceeded NUMBER,
+    maidens NUMBER,
+    balls NUMBER
+);
+=================================================================================================================
+-- All_Rounder Table
+CREATE TABLE all_rounder (
+    all_rounder_id VARCHAR2(255) PRIMARY KEY
+);
+=================================================================================================================
+
+SQL>
+SQL> DESC batsman;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ BATSMAN_ID                                NOT NULL NUMBER(38)
+ RUNS                                               NUMBER(38)
+ BALLS                                              NUMBER(38)
+ FOURSS                                             NUMBER(38)
+ SIXES                                              NUMBER(38)
+ STRIKERATE                                         NUMBER(38)
+ CREDIT_ID                                          NUMBER(38)
+ FIRST_NAME                                         VARCHAR2(50)
+ LAST_NAME                                          VARCHAR2(50)
+ DOMINANT_ARM                                       VARCHAR2(10)
+ DATE_OF_BIRTH                                      DATE
+ COUNTRY                                            VARCHAR2(50)
+ GENDER                                             VARCHAR2(10)
+ JERSEY_NUMBER                                      NUMBER(38)
+
+SQL> DESC bowler;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ BOWLER_ID                                 NOT NULL NUMBER(38)
+ WICKETS                                            NUMBER(38)
+ RUNS_CONCEDED                                      NUMBER(38)
+ ECONOMY                                            FLOAT(126)
+ MAIDENS                                            NUMBER(38)
+ BALLS_BOWLED                                       NUMBER(38)
+ CREDIT_ID                                          NUMBER(38)
+ FIRST_NAME                                         VARCHAR2(50)
+ LAST_NAME                                          VARCHAR2(50)
+ DOMINANT_ARM                                       VARCHAR2(10)
+ DATE_OF_BIRTH                                      DATE
+ COUNTRY                                            VARCHAR2(50)
+ GENDER                                             VARCHAR2(10)
+ JERSEY_NUMBER                                      NUMBER(38)
+
+
+SQL> DESC points_table;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ POINTS_TABLE_ID                           NOT NULL NUMBER(38)
+ POSITION                                           NUMBER(38)
+ POINTS                                             NUMBER(38)
+ M_PLAYED                                           NUMBER(38)
+ M_WON                                              NUMBER(38)
+ NRR                                                FLOAT(126)
+ M_LOST                                             NUMBER(38)
+ NO_RESULT                                          NUMBER(38)
+ WIN_PERCENTAGE                                     FLOAT(126)
+ TEAM_ID                                            NUMBER(38)
+
+SQL> DESC teams;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TEAM_ID                                   NOT NULL NUMBER(38)
+ M_PLAYED                                           NUMBER(38)
+ M_LOST                                             NUMBER(38)
+ M_DRAWN                                            NUMBER(38)
+ M_WON                                              NUMBER(38)
+ COACH_NAME                                         VARCHAR2(50)
+ TEAM_NAME                                          VARCHAR2(50)
+ KIT_COLOR                                          VARCHAR2(50)
+ MATCH_ID                                           NUMBER(38)
+
+
+SQL> DESC overlay;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ TIME                                      NOT NULL TIMESTAMP(6)
+ STRIKER                                            VARCHAR2(50)
+ NON_STRIKER                                        VARCHAR2(50)
+ TOTAL                                              NUMBER
+ BOWLER                                             VARCHAR2(50)
+ WICKETS                                            NUMBER
+ OVERS                                              FLOAT(126)
+ RUN_RATE                                           FLOAT(126)
+ POWERPLAY                                          CHAR(1)
+ HIGHLIGHT                                          VARCHAR2(4000)
+
+SQL> DESC notification;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ NOTIFICATION_ID                           NOT NULL NUMBER(38)
+ DOMAIN                                             VARCHAR2(100)
+ NOTIFICATION_TEAM                                  VARCHAR2(100)
+ NOTIFICATION_TYPE                                  VARCHAR2(50)
+
+
+
+=================================================================================================================
+
+
+SQL> -- Extras Table
+SQL> CREATE TABLE extras (
+  2      extra_id VARCHAR2(255) PRIMARY KEY,
+  3      type VARCHAR2(255),
+  4      illegal NUMBER,
+  5      legal NUMBER,
+  6      runs NUMBER,
+  7      wickets NUMBER
+  8  );
+
+
+SQL> -- Set a column to Not Null
+SQL> ALTER TABLE customer_copy MODIFY email VARCHAR2(100) NOT NULL;
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ FULL_NAME                                          VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                     NOT NULL VARCHAR2(100)
+
+SQL> -- Set a column to Null
+SQL> ALTER TABLE customer_copy MODIFY email VARCHAR2(100) NULL;
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ FULL_NAME                                          VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+SQL> -- Add a unique constraint
+SQL> ALTER TABLE customer_copy ADD CONSTRAINT unique_email UNIQUE (email);
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ FULL_NAME                                          VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+SQL> -- Drop a unique constraint
+SQL> ALTER TABLE customer_copy DROP CONSTRAINT unique_email;
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ FULL_NAME                                          VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+SQL> -- Add a check constraint
+SQL> ALTER TABLE customer_copy ADD CONSTRAINT check_age CHECK (customer_age >= 18);
+
+Table altered.
+
+SQL> insert into customer_copy customer_age values(12);
+insert into customer_copy customer_age values(12)
+            *
+ERROR at line 1:
+ORA-00947: not enough values
+
+
+SQL> -- Drop a check constraint
+SQL> ALTER TABLE customer_copy DROP CONSTRAINT check_age;
+
+Table altered.
+
+SQL> -- Truncate the table
+SQL> TRUNCATE TABLE customer_copy;
+
+Table truncated.
+
+SQL> desc customer_copy
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ FULL_NAME                                          VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+SQL> -- Drop the table
+SQL> DROP TABLE customer;
+DROP TABLE customer
+           *
+ERROR at line 1:
+ORA-02449: unique/primary keys in table referenced by foreign keys
+
+
+SQL> DROP TABLE notification;
+
+Table dropped.
+
+SQL> desc notification;
+ERROR:
+ORA-04043: object notification does not exist
+
+-- Customer Table
+CREATE TABLE customer (
+    customer_id VARCHAR2(255) PRIMARY KEY,
+    customer_age NUMBER,
+    customer_name VARCHAR2(255),
+    c_password VARCHAR2(255),
+    c_username VARCHAR2(255),
+    upi VARCHAR2(255),
+    card VARCHAR2(255),
+    redeem_code VARCHAR2(255),
+    customer_gender VARCHAR2(255),
+    rating_provided NUMBER
+);
+=================================================================================================================
+-- Customer Phone Number Table
+CREATE TABLE customer_phone_number (
+    phone_number VARCHAR2(255) PRIMARY KEY,
+    customer_id VARCHAR2(255),
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
+);
+=================================================================================================================
+-- Fantasy_11 Table
+CREATE TABLE fantasy_11 (
+    fantasy_id VARCHAR2(255) PRIMARY KEY,
+    bet_amount NUMBER,
+    captian VARCHAR2(255),
+    vice_captian VARCHAR2(255),
+    total_credit NUMBER,
+    price_amount NUMBER,
+    fantasy_name VARCHAR2(255),
+    mvp VARCHAR2(255),
+    match_id VARCHAR2(255),
+    customer_id VARCHAR2(255),
+    FOREIGN KEY (match_id) REFERENCES matches(match_id),
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
+);
+=================================================================================================================
+-- Leaderboard Table
+CREATE TABLE leaderboard (
+    leader_board_id VARCHAR2(255) PRIMARY KEY,
+    position NUMBER,
+    total_points NUMBER,
+    fantasy_id VARCHAR2(255),
+    FOREIGN KEY (fantasy_id) REFERENCES fantasy_11(fantasy_id)
+);
+=================================================================================================================
+-- Matches Table
+CREATE TABLE matches (
+    match_id VARCHAR2(255) PRIMARY KEY,
+    match_venue VARCHAR2(255),
+    match_time TIMESTAMP,
+    match_refree VARCHAR2(255),
+    match_type VARCHAR2(255),
+    audience_count NUMBER,
+    match_fee NUMBER,
+    ticket_fee NUMBER,
+    ground_name VARCHAR2(255),
+    pitch VARCHAR2(255),
+    format_id VARCHAR2(255),
+    FOREIGN KEY (format_id) REFERENCES format(format_id)
+);
+=================================================================================================================
+-- Format Table
+CREATE TABLE format (
+    format_id VARCHAR2(255) PRIMARY KEY,
+    overs NUMBER,
+    ball_type VARCHAR2(255),
+    powerplay_till NUMBER
+);
+
+
+SQL> DESC customer;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                               NOT NULL NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(38)
+ CUSTOMER_NAME                                      VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ UPI                                                VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+
+SQL> DESC fantasy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ FANTASY_ID                                NOT NULL NUMBER(38)
+ BET_AMOUNT                                         NUMBER
+ CAPTAIN                                            NUMBER(38)
+ VICE_CAPTAIN                                       NUMBER(38)
+ TOTAL_CREDIT                                       NUMBER
+ PRICE_AMOUNT                                       NUMBER
+ FANTASY_NAME                                       VARCHAR2(50)
+ MVP                                                NUMBER(38)
+ MATCH_ID                                           NUMBER(38)
+ CUSTOMER_ID                                        NUMBER(38)
+
+SQL> DESC leaderboard;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ LEADERBOARD_ID                            NOT NULL NUMBER(38)
+ POSITION                                           NUMBER(38)
+ TOTAL_POINTS                                       NUMBER(38)
+
+SQL> DESC matches;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ MATCH_ID                                  NOT NULL NUMBER(38)
+ MATCH_VENUE                                        VARCHAR2(100)
+ MATCH_TIME                                         TIMESTAMP(6)
+ MATCH_REFEREE                                      VARCHAR2(50)
+ MATCH_TYPE                                         VARCHAR2(50)
+ AUDIENCE_COUNT                                     NUMBER(38)
+ MATCH_FEE                                          NUMBER
+ TICKET_FEE                                         NUMBER
+ GROUND_NAME                                        VARCHAR2(100)
+ PITCH                                              VARCHAR2(50)
+ FORMAT_ID                                          NUMBER(38)
+
+SQL> DESC format;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ FORMAT_ID                                 NOT NULL NUMBER(38)
+ OVERS                                              NUMBER(38)
+ BALL_TYPE                                          VARCHAR2(50)
+ POWERPLAY_TILL                                     NUMBER(38)
+
+======================================================================================================================================
+
+
+SQL> -- Copy the customer table
+SQL> CREATE TABLE customer_copy AS SELECT * FROM customer where 1=0;
+
+Table created.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(38)
+ CUSTOMER_NAME                                      VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ UPI                                                VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+
+SQL> -- Add a new column
+SQL> ALTER TABLE customer_copy ADD email VARCHAR2(100);
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(38)
+ CUSTOMER_NAME                                      VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ UPI                                                VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+SQL> -- Drop an existing column
+SQL> ALTER TABLE customer_copy DROP COLUMN upi;
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(38)
+ CUSTOMER_NAME                                      VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+SQL>
+SQL> -- Modify a column's data type
+SQL> ALTER TABLE customer_copy MODIFY customer_age NUMBER(3);
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ CUSTOMER_NAME                                      VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+
+-- Points_Table Table
+CREATE TABLE points_table (
+    points_table_id VARCHAR2(255) PRIMARY KEY,
+    position NUMBER,
+    points NUMBER,
+    m_played NUMBER,
+    m_won NUMBER,
+    NRR NUMBER,
+    m_lost NUMBER,
+    no_result NUMBER,
+    win_percentage NUMBER,
+    team_id VARCHAR2(255),
+    FOREIGN KEY (team_id) REFERENCES teams(team_id)
+);
+=================================================================================================================
+-- Teams Table
+CREATE TABLE teams (
+    team_id VARCHAR2(255) PRIMARY KEY,
+    m_played NUMBER,
+    m_lost NUMBER,
+    m_drawn NUMBER,
+    m_won NUMBER,
+    coach_name VARCHAR2(255),
+    team_name VARCHAR2(255),
+    kit_color VARCHAR2(255),
+    match_id VARCHAR2(255),
+    FOREIGN KEY (match_id) REFERENCES matches(match_id)
+);
+=================================================================================================================
+-- Player Table
+CREATE TABLE player (
+    player_id VARCHAR2(255) PRIMARY KEY,
+    first_name VARCHAR2(255),
+    dominant_arm VARCHAR2(255),
+    date_of_birth DATE,
+    country VARCHAR2(255),
+    gender VARCHAR2(255),
+    jersey_number NUMBER,
+    last_name VARCHAR2(255),
+    credit_id VARCHAR2(255),
+    ball_id VARCHAR2(255)
+);
+=================================================================================================================
+-- Teams_Team_Records Table
+CREATE TABLE teams_team_records (
+    team_records VARCHAR2(255) PRIMARY KEY,
+    team_id VARCHAR2(255),
+    FOREIGN KEY (team_id) REFERENCES teams(team_id)
+);
+=================================================================================================================
+-- Player_Records Table
+CREATE TABLE player_records (
+    records VARCHAR2(255) PRIMARY KEY,
+    player_id VARCHAR2(255),
+    FOREIGN KEY (player_id) REFERENCES player(player_id)
+);
+=================================================================================================================
+-- Plays Table
+CREATE TABLE plays (
+    player_id VARCHAR2(255),
+    team_id VARCHAR2(255),
+    FOREIGN KEY (player_id) REFERENCES player(player_id),
+    FOREIGN KEY (team_id) REFERENCES teams(team_id)
+);
+=================================================================================================================
+
+
+SQL> DESC player;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ PLAYER_ID                                 NOT NULL NUMBER(38)
+ CREDIT_ID                                          NUMBER(38)
+ BALL_ID                                            NUMBER(38)
+ FIRST_NAME                                         VARCHAR2(50)
+ LAST_NAME                                          VARCHAR2(50)
+ DOMINANT_ARM                                       VARCHAR2(10)
+ DATE_OF_BIRTH                                      DATE
+ COUNTRY                                            VARCHAR2(50)
+ GENDER                                             VARCHAR2(10)
+ JERSEY_NUMBER                                      NUMBER(38)
+
+SQL> DESC credit;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CREDIT_ID                                 NOT NULL NUMBER(38)
+ RUNS_CREDIT                                        NUMBER(38)
+ MILESTONES_100_C                                   NUMBER(38)
+ MILESTONE_50_C                                     NUMBER(38)
+ WICKETS_CREDITS                                    NUMBER(38)
+ BOUNDARY_6_CREDIT                                  NUMBER(38)
+ BOUNDARY_4_CREDIT                                  NUMBER(38)
+ FIELD_RUNOUT_CREDIT                                NUMBER(38)
+ FIELD_CATCH_CREDIT                                 NUMBER(38)
+ FIELD_STUMPING_CREDIT                              NUMBER(38)
+
+SQL> DESC balls;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ BALL_ID                                   NOT NULL NUMBER(38)
+ BALL_SPEED                                         FLOAT(126)
+ RUNS                                               NUMBER(38)
+ WICKET                                             NUMBER(1)
+ TIME                                               TIMESTAMP(6)
+ EXTRA_ID                                           NUMBER(38)
+
+SQL> DESC extras;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EXTRA_ID                                  NOT NULL NUMBER(38)
+ TYPE                                               VARCHAR2(50)
+ ILLEGAL_RUNS                                       NUMBER(38)
+ LEGAL_RUNS                                         NUMBER(38)
+ WICKETS                                            NUMBER(38)
+ TOTAL_RUNS_PER_BALL                                NUMBER(38)
+
+SQL> DESC scorecard;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ SCORECARD_ID                              NOT NULL NUMBER(38)
+ TIME                                               TIMESTAMP(6)
+ BALLS                                              NUMBER(38)
+ BALLS_BOWLED                                       NUMBER(38)
+ BALL_ID                                            NUMBER(38)
+ RUNRATE                                            FLOAT(126)
+ RUNS_GIVEN                                         NUMBER(38)
+ RUNS_SCORED                                        NUMBER(38)
+ WICKETS                                            NUMBER(38)
+
+===========================================================================================================================
+
+SQL> -- Rename a column
+SQL> ALTER TABLE customer_copy RENAME COLUMN customer_name TO full_name;
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ FULL_NAME                                          VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+SQL> -- Rename the table
+SQL> ALTER TABLE customer_copy RENAME TO customer_backup;
+
+Table altered.
+
+SQL> desc customer_copy;
+ERROR:
+ORA-04043: object customer_copy does not exist
+
+
+SQL> desc customer_backup;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ FULL_NAME                                          VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+SQL> -- Rename the table
+SQL> ALTER TABLE customer_backup RENAME TO customer_copy;
+
+Table altered.
+
+SQL> -- Add a primary key
+SQL> ALTER TABLE customer_copy ADD CONSTRAINT pk_customer_copy PRIMARY KEY (customer_id);
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                               NOT NULL NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ FULL_NAME                                          VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+SQL> -- Drop a primary key
+SQL> ALTER TABLE customer_copy DROP PRIMARY KEY;
+
+Table altered.
+
+SQL> desc customer_copy;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ CUSTOMER_ID                                        NUMBER(38)
+ CUSTOMER_AGE                                       NUMBER(3)
+ FULL_NAME                                          VARCHAR2(50)
+ CUSTOMER_PASSWORD                                  VARCHAR2(50)
+ CUSTOMER_USERNAME                                  VARCHAR2(50)
+ CARD                                               VARCHAR2(50)
+ REDEEM_CODE                                        VARCHAR2(50)
+ CUSTOMER_GENDER                                    VARCHAR2(10)
+ RATING_PROVIDED                                    FLOAT(126)
+ EMAIL                                              VARCHAR2(100)
+
+
+
+[23bcs112@mepcolinux dbms]$exit
+exit
+
+Script done on Wed 12 Feb 2025 04:29:00 PM IST

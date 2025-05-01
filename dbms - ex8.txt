@@ -1,0 +1,205 @@
+[23bcs112@mepcolinux dbms]$cat ex8.prn
+Script started on Tue 25 Mar 2025 10:48:29 AM IST
+[23bcs112@mepcolinux dbms]$cat ex7.txt
+SQL> CREATE OR REPLACE TRIGGER before_insert_customer
+  2  BEFORE INSERT ON customer
+  3  FOR EACH ROW
+  4  BEGIN
+  5      IF :NEW.customer_name IS NULL THEN
+  6          RAISE_APPLICATION_ERROR(-20001, 'Customer name cannot be null');
+  7      END IF;
+  8  END;
+  9  /
+
+Trigger created.
+
+SQL> INSERT INTO customer (customer_id, customer_age) VALUES ('CUST01', 30);
+
+ORA-20001: Customer name cannot be null
+ORA-06512: at "C##HR.BEFORE_INSERT_CUSTOMER", line 3
+ORA-04088: error during execution of trigger 'C##HR.BEFORE_INSERT_CUSTOMER'
+0 rows inserted.
+
+SQL> INSERT INTO customer (customer_id, customer_name, customer_age) VALUES ('CUST06', 'siva', 26);
+1 row inserted.
+
+SQL> INSERT INTO customer (customer_id, customer_name, customer_age) VALUES ('CUST07', 'venkatesh', 30);
+1 row inserted.
+
+SQL> SELECT * FROM customer;
+
+CUSTOMER_ID    CUSTOMER_NAME    CUSTOMER_AGE
+------------   --------------   ------------
+CUST02         akilan           25
+CUST03         akash            28
+CUST04         durai            29
+CUST05         mohan            27
+CUST06         siva             26
+CUST07         venkatesh        30
+
+SQL> CREATE OR REPLACE TRIGGER after_insert_match
+  2  AFTER INSERT ON matches
+  3  FOR EACH ROW
+  4  BEGIN
+  5      DBMS_OUTPUT.PUT_LINE('New match inserted with match ID: ' || :NEW.match_id);
+  6  END;
+  7  /
+
+Trigger created.
+
+SQL> SET SERVEROUTPUT ON;
+
+SQL> INSERT INTO matches (match_id, match_venue, match_time, match_refree, match_type, audience_count, match_fee, ticket_fee, ground_name, pitch, format_id)
+  2  VALUES ('MCH01', 'Wembley', TO_TIMESTAMP('2025-03-11 12:12:05', 'YYYY-MM-DD HH24:MI:SS'), 'John Doe', 'One-Day', 50000, 100000, 50, 'Wembley Ground', 'Grass', 'FMT01');
+
+New match inserted with match ID: MCH01
+1 row inserted.
+
+SQL> SELECT * FROM matches;
+
+MATCH_ID    MATCH_VENUE   MATCH_TIME              MATCH_REFREE   MATCH_TYPE    AUDIENCE_COUNT    MATCH_FEE    TICKET_FEE    GROUND_NAME     PITCH    FORMAT_ID
+----------  ------------  ----------------------  -------------  ------------  ----------------  -----------  ------------  --------------  -------  ---------
+MCH01       Wembley       2025-03-11 12:12:05     John Doe       One-Day       50000             100000       50            Wembley Ground  Grass    FMT01
+
+SQL> CREATE OR REPLACE TRIGGER before_delete_customer
+  2  BEFORE DELETE ON customer
+  3  FOR EACH ROW
+  4  DECLARE
+  5      phone_count INTEGER;
+  6  BEGIN
+  7      SELECT COUNT(*) INTO phone_count FROM customer_phone_number WHERE customer_id = :OLD.customer_id;
+  8      IF phone_count > 0 THEN
+  9          RAISE_APPLICATION_ERROR(-20002, 'Customer has linked phone numbers. Cannot delete.');
+ 10      END IF;
+ 11  END;
+ 12  /
+
+Trigger created.
+
+SQL> DELETE FROM customer WHERE customer_id = 'CUST02';
+
+ORA-20002: Customer has linked phone numbers. Cannot delete.
+ORA-06512: at "C##HR.BEFORE_DELETE_CUSTOMER", line 6
+ORA-04088: error during execution of trigger 'C##HR.BEFORE_DELETE_CUSTOMER'
+0 rows deleted.
+
+SQL> SELECT * FROM customer;
+
+CUSTOMER_ID    CUSTOMER_NAME    CUSTOMER_AGE
+------------   --------------   ------------
+CUST02         akilan           25
+CUST03         akash            28
+CUST04         durai            29
+CUST05         mohan            27
+CUST06         siva             26
+CUST07         venkatesh        30
+
+SQL> CREATE OR REPLACE TRIGGER after_delete_team
+  2  AFTER DELETE ON teams
+  3  FOR EACH ROW
+  4  BEGIN
+  5      DBMS_OUTPUT.PUT_LINE('Team ' || :OLD.team_name || ' has been deleted.');
+  6  END;
+  7  /
+
+Trigger created.
+
+SQL> DELETE FROM teams WHERE team_id = 'TEAM01';
+
+Team Chennai Super Kings has been deleted.
+1 row deleted.
+
+SQL> SELECT * FROM teams WHERE team_id = 'TEAM01';
+
+No rows selected.
+
+SQL> CREATE OR REPLACE TRIGGER before_update_teams
+  2  BEFORE UPDATE ON teams
+  3  FOR EACH ROW
+  4  BEGIN
+  5      IF :NEW.m_played < 0 THEN
+  6          RAISE_APPLICATION_ERROR(-20003, 'Matches played cannot be negative.');
+  7      END IF;
+  8  END;
+  9  /
+
+Trigger created.
+
+SQL> SELECT * FROM teams WHERE team_id = 'TEAM01';
+
+TEAM_ID    TEAM_NAME               M_PLAYED
+---------  ----------------------  ---------
+TEAM01     Chennai Super Kings     10
+
+SQL> UPDATE teams SET m_played = -1 WHERE team_id = 'TEAM01';
+
+ORA-20003: Matches played cannot be negative.
+ORA-06512: at "C##HR.BEFORE_UPDATE_TEAMS", line 3
+ORA-04088: error during execution of trigger 'C##HR.BEFORE_UPDATE_TEAMS'
+0 rows updated.
+
+SQL> SELECT * FROM teams WHERE team_id = 'TEAM01';
+
+TEAM_ID    TEAM_NAME               M_PLAYED
+---------  ----------------------  ---------
+TEAM01     Chennai Super Kings     10
+
+SQL> CREATE OR REPLACE TRIGGER after_update_player
+  2  AFTER UPDATE ON player
+  3  FOR EACH ROW
+  4  BEGIN
+  5      DBMS_OUTPUT.PUT_LINE('Player ' || :OLD.player_id || ' updated. New jersey number: ' || :NEW.jersey_number);
+  6  END;
+  7  /
+
+Trigger created.
+
+SQL> UPDATE player SET jersey_number = 10 WHERE player_id = 'PLY01';
+
+Player PLY01 updated. New jersey number: 10
+1 row updated.
+
+SQL> SELECT * FROM player WHERE player_id = 'PLY01';
+
+PLAYER_ID    PLAYER_NAME    JERSEY_NUMBER
+-----------  -------------  --------------
+PLY01        Player Name    10
+
+
+SQL> CREATE OR REPLACE TRIGGER statement_trigger_points_table
+  2  BEFORE UPDATE ON points_table
+  3  DECLARE
+  4      v_points_change NUMBER := 10;
+  5  BEGIN
+  6      IF UPDATING THEN
+  7          FOR rec IN (SELECT points_table_id FROM points_table) LOOP
+  8              UPDATE points_table
+  9              SET points = points + v_points_change
+ 10              WHERE points_table_id = rec.points_table_id;
+ 11          END LOOP;
+ 12      END IF;
+ 13  END statement_trigger_points_table;
+ 14  /
+
+Trigger created.
+
+SQL> SELECT * FROM points_table WHERE points_table_id = 'PT01';
+
+POINTS_TABLE_ID    TEAM_ID    POINTS
+-----------------  ---------  ------
+PT01               TEAM01     5
+
+SQL> UPDATE points_table SET points = points + 5 WHERE points_table_id = 'PT01';
+
+1 row updated.
+
+SQL> SELECT * FROM points_table WHERE points_table_id = 'PT01';
+
+POINTS_TABLE_ID    TEAM_ID    POINTS
+-----------------  ---------  ------
+PT01               TEAM01     15
+[23bcs112@mepcolinux dbms]$exit
+exit
+
+Script done on Tue 25 Mar 2025 10:48:56 AM IST
+[23bcs112@mepcolinux dbms]$

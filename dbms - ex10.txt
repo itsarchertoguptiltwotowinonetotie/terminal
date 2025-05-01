@@ -1,0 +1,502 @@
+[23bcs112@mepcolinux dbms]$cat ex10.prn
+[23bcs112@mepcolinux dbms]$cat ex10.txt
+
+SQL> CREATE OR REPLACE PROCEDURE get_match_count_proc
+  2  IS
+  3    match_count NUMBER;
+  4  BEGIN
+  5    SELECT COUNT(*) INTO match_count FROM matches;
+  6    DBMS_OUTPUT.PUT_LINE('Count of matches: ' || match_count);
+  7  EXCEPTION
+  8    WHEN OTHERS THEN
+  9      DBMS_OUTPUT.PUT_LINE('Error getting match count');
+ 10  END get_match_count_proc;
+ 11  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_match_count_proc;
+  3  END;
+  4  /
+
+Count of matches: 20
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_match_venue_proc(p_match_id IN VARCHAR2)
+  2  IS
+  3    m_venue VARCHAR2(255);
+  4  BEGIN
+  5    SELECT match_venue INTO m_venue FROM matches WHERE match_id = p_match_id;
+  6    DBMS_OUTPUT.PUT_LINE('Match venue: ' || m_venue);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No match found with ID ' || p_match_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting match venue');
+ 12  END get_match_venue_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_match_venue_proc('M001');
+  3  END;
+  4  /
+
+Match venue: Eden Gardens
+
+PL/SQL procedure successfully completed.
+
+
+SQL> CREATE OR REPLACE PROCEDURE match_exists_proc(p_match_id IN VARCHAR2)
+  2  IS
+  3    v_match_id VARCHAR2(10);
+  4  BEGIN
+  5    SELECT match_id INTO v_match_id
+  6    FROM matches
+  7    WHERE match_id = p_match_id;
+  8    DBMS_OUTPUT.PUT_LINE('Match exists');
+  9  EXCEPTION
+ 10    WHEN NO_DATA_FOUND THEN
+ 11      DBMS_OUTPUT.PUT_LINE('No match found with ID ' || p_match_id);
+ 12    WHEN OTHERS THEN
+ 13      DBMS_OUTPUT.PUT_LINE('Error checking match existence');
+ 14  END match_exists_proc;
+ 15  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    match_exists_proc('M002');
+  3  END;
+  4  /
+
+Match exists
+
+PL/SQL procedure successfully completed.
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_total_audience_proc(p_match_id IN VARCHAR2)
+  2  IS
+  3    total_audience NUMBER;
+  4  BEGIN
+  5    SELECT audience_count INTO total_audience FROM matches WHERE match_id = p_match_id;
+  6    DBMS_OUTPUT.PUT_LINE('Total audience count: ' || total_audience);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No match found with ID ' || p_match_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting audience count');
+ 12  END get_total_audience_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_total_audience_proc('M003');
+  3  END;
+  4  /
+
+Total audience count: 15000
+
+PL/SQL procedure successfully completed.
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_avg_match_fee_proc
+  2  IS
+  3    avg_fee NUMBER;
+  4  BEGIN
+  5    SELECT AVG(match_fee) INTO avg_fee FROM matches;
+  6    DBMS_OUTPUT.PUT_LINE('Average match fee: ' || avg_fee);
+  7  EXCEPTION
+  8    WHEN OTHERS THEN
+  9      DBMS_OUTPUT.PUT_LINE('Error getting average match fee');
+ 10  END get_avg_match_fee_proc;
+ 11  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_avg_match_fee_proc;
+  3  END;
+  4  /
+
+Average match fee: 5000
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_team_count_in_match_proc(p_match_id IN VARCHAR2)
+  2  IS
+  3    team_count NUMBER;
+  4  BEGIN
+  5    SELECT COUNT(*) INTO team_count FROM teams WHERE match_id = p_match_id;
+  6    DBMS_OUTPUT.PUT_LINE('Number of teams in match: ' || team_count);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No match found with ID ' || p_match_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting team count');
+ 12  END get_team_count_in_match_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_team_count_in_match_proc('M001');
+  3  END;
+  4  /
+
+Number of teams in match: 2
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_fantasy_team_count_proc
+  2  IS
+  3    fantasy_team_count NUMBER;
+  4  BEGIN
+  5    SELECT COUNT(*) INTO fantasy_team_count FROM fantasy_11;
+  6    DBMS_OUTPUT.PUT_LINE('Count of fantasy teams: ' || fantasy_team_count);
+  7  EXCEPTION
+  8    WHEN OTHERS THEN
+  9      DBMS_OUTPUT.PUT_LINE('Error getting fantasy team count');
+ 10  END get_fantasy_team_count_proc;
+ 11  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_fantasy_team_count_proc;
+  3  END;
+  4  /
+
+Count of fantasy teams: 10
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_total_bet_amount_proc(p_fantasy_id IN VARCHAR2)
+  2  IS
+  3    total_bet NUMBER;
+  4  BEGIN
+  5    SELECT SUM(bet_amount) INTO total_bet FROM fantasy_11 WHERE fantasy_id = p_fantasy_id;
+  6    DBMS_OUTPUT.PUT_LINE('Total bet amount: ' || total_bet);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No fantasy team found with ID ' || p_fantasy_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting total bet amount');
+ 12  END get_total_bet_amount_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_total_bet_amount_proc('F001');
+  3  END;
+  4  /
+
+Total bet amount: 5000
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_fantasy_team_position_proc(p_fantasy_id IN VARCHAR2)
+  2  IS
+  3    team_position NUMBER;
+  4  BEGIN
+  5    SELECT position INTO team_position FROM leaderboard WHERE fantasy_id = p_fantasy_id;
+  6    DBMS_OUTPUT.PUT_LINE('Fantasy team position: ' || team_position);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No fantasy team found with ID ' || p_fantasy_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting fantasy team position');
+ 12  END get_fantasy_team_position_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_fantasy_team_position_proc('F001');
+  3  END;
+  4  /
+
+Fantasy team position: 1
+
+PL/SQL procedure successfully completed.
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_total_points_proc(p_team_id IN VARCHAR2)
+  2  IS
+  3    total_points NUMBER;
+  4  BEGIN
+  5    SELECT points INTO total_points FROM points_table WHERE team_id = p_team_id;
+  6    DBMS_OUTPUT.PUT_LINE('Total points: ' || total_points);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No team found with ID ' || p_team_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting total points');
+ 12  END get_total_points_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_total_points_proc('T001');
+  3  END;
+  4  /
+
+Total points: 20
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_matches_played_by_team_proc(p_team_id IN VARCHAR2)
+  2  IS
+  3    matches_played NUMBER;
+  4  BEGIN
+  5    SELECT m_played INTO matches_played FROM points_table WHERE team_id = p_team_id;
+  6    DBMS_OUTPUT.PUT_LINE('Matches played: ' || matches_played);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No team found with ID ' || p_team_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting matches played');
+ 12  END get_matches_played_by_team_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_matches_played_by_team_proc('T001');
+  3  END;
+  4  /
+
+Matches played: 10
+
+PL/SQL procedure successfully completed.
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_matches_won_by_team_proc(p_team_id IN VARCHAR2)
+  2  IS
+  3    matches_won NUMBER;
+  4  BEGIN
+  5    SELECT m_won INTO matches_won FROM points_table WHERE team_id = p_team_id;
+  6    DBMS_OUTPUT.PUT_LINE('Matches won: ' || matches_won);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No team found with ID ' || p_team_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting matches won');
+ 12  END get_matches_won_by_team_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_matches_won_by_team_proc('T001');
+  3  END;
+  4  /
+
+Matches won: 7
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_team_nrr_proc(p_team_id IN VARCHAR2)
+  2  IS
+  3    team_nrr NUMBER;
+  4  BEGIN
+  5    SELECT NRR INTO team_nrr FROM points_table WHERE team_id = p_team_id;
+  6    DBMS_OUTPUT.PUT_LINE('Net run rate (NRR): ' || team_nrr);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No team found with ID ' || p_team_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting NRR');
+ 12  END get_team_nrr_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_team_nrr_proc('T001');
+  3  END;
+  4  /
+
+Net run rate (NRR): 1.25
+
+PL/SQL procedure successfully completed.
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_team_win_percentage_proc(p_team_id IN VARCHAR2)
+  2  IS
+  3    win_percentage NUMBER;
+  4  BEGIN
+  5    SELECT win_percentage INTO win_percentage FROM points_table WHERE team_id = p_team_id;
+  6    DBMS_OUTPUT.PUT_LINE('Win percentage: ' || win_percentage);
+  7  EXCEPTION
+  8    WHEN NO_DATA_FOUND THEN
+  9      DBMS_OUTPUT.PUT_LINE('No team found with ID ' || p_team_id);
+ 10    WHEN OTHERS THEN
+ 11      DBMS_OUTPUT.PUT_LINE('Error getting win percentage');
+ 12  END get_team_win_percentage_proc;
+ 13  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_team_win_percentage_proc('T001');
+  3  END;
+  4  /
+
+Win percentage: 70
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE PROCEDURE get_match_details_proc(p_match_id IN VARCHAR2)
+  2  IS
+  3    v_match matches%ROWTYPE;
+  4  BEGIN
+  5    SELECT * INTO v_match FROM matches WHERE match_id = p_match_id;
+  6    DBMS_OUTPUT.PUT_LINE('Match ID: ' || v_match.match_id);
+  7    DBMS_OUTPUT.PUT_LINE('Venue: ' || v_match.match_venue);
+  8    DBMS_OUTPUT.PUT_LINE('Time: ' || v_match.match_time);
+  9    DBMS_OUTPUT.PUT_LINE('Referee: ' || v_match.match_refree);
+ 10    DBMS_OUTPUT.PUT_LINE('Type: ' || v_match.match_type);
+ 11    DBMS_OUTPUT.PUT_LINE('Audience Count: ' || v_match.audience_count);
+ 12    DBMS_OUTPUT.PUT_LINE('Match Fee: ' || v_match.match_fee);
+ 13    DBMS_OUTPUT.PUT_LINE('Ticket Fee: ' || v_match.ticket_fee);
+ 14    DBMS_OUTPUT.PUT_LINE('Ground Name: ' || v_match.ground_name);
+ 15    DBMS_OUTPUT.PUT_LINE('Pitch: ' || v_match.pitch);
+ 16    DBMS_OUTPUT.PUT_LINE('Format ID: ' || v_match.format_id);
+ 17  EXCEPTION
+ 18    WHEN NO_DATA_FOUND THEN
+ 19      DBMS_OUTPUT.PUT_LINE('No match found with ID ' || p_match_id);
+ 20    WHEN OTHERS THEN
+ 21      DBMS_OUTPUT.PUT_LINE('Error getting match details');
+ 22  END get_match_details_proc;
+ 23  /
+
+Procedure created.
+
+SQL> BEGIN
+  2    get_match_details_proc('M001');
+  3  END;
+  4  /
+
+Match ID: M001
+Venue: Eden Gardens
+Time: 2025-03-28 14:00:00
+Referee: Kumar Dharmasena
+Type: T20
+Audience Count: 15000
+Match Fee: 5000
+Ticket Fee: 100
+Ground Name: Eden Gardens
+Pitch: Dry
+Format ID: F001
+
+PL/SQL procedure successfully completed.
+
+SQL> CREATE OR REPLACE PROCEDURE get_total_batsman_runs_proc(
+  2    p_batsman_id IN VARCHAR2,
+  3    p_total_runs OUT NUMBER
+  4  )
+  5  IS
+  6  BEGIN
+  7    SELECT SUM(runs) INTO p_total_runs FROM batsman WHERE batsman_id = p_batsman_id;
+  8  EXCEPTION
+  9    WHEN NO_DATA_FOUND THEN
+ 10      p_total_runs := 0; -- Return 0 if no data found
+ 11    WHEN OTHERS THEN
+ 12      p_total_runs := NULL; -- Return NULL for any other error
+ 13  END get_total_batsman_runs_proc;
+ 14  /
+
+Procedure created.
+
+SQL> DECLARE
+  2    v_total_runs NUMBER;
+  3  BEGIN
+  4    get_total_batsman_runs_proc('B001', v_total_runs);
+  5    DBMS_OUTPUT.PUT_LINE('Total runs scored by batsman: ' || v_total_runs);
+  6  END;
+  7  /
+
+Total runs scored by batsman: 1200
+
+PL/SQL procedure successfully completed.
+
+SQL> CREATE OR REPLACE PROCEDURE get_match_details_proc(
+  2    p_match_id IN VARCHAR2,
+  3    p_match_details OUT matches%ROWTYPE
+  4  )
+  5  IS
+  6  BEGIN
+  7    SELECT * INTO p_match_details FROM matches WHERE match_id = p_match_id;
+  8  EXCEPTION
+  9    WHEN NO_DATA_FOUND THEN
+ 10      p_match_details := NULL; -- Return NULL if no data found
+ 11    WHEN OTHERS THEN
+ 12      p_match_details := NULL; -- Return NULL for any other error
+ 13  END get_match_details_proc;
+ 14  /
+
+Procedure created.
+
+SQL> DECLARE
+  2    v_match_details matches%ROWTYPE;
+  3  BEGIN
+  4    get_match_details_proc('M001', v_match_details);
+  5    IF v_match_details IS NOT NULL THEN
+  6      DBMS_OUTPUT.PUT_LINE('Match ID: ' || v_match_details.match_id);
+  7      DBMS_OUTPUT.PUT_LINE('Venue: ' || v_match_details.match_venue);
+  8      DBMS_OUTPUT.PUT_LINE('Time: ' || v_match_details.match_time);
+  9      DBMS_OUTPUT.PUT_LINE('Referee: ' || v_match_details.match_refree);
+ 10      DBMS_OUTPUT.PUT_LINE('Type: ' || v_match_details.match_type);
+ 11      DBMS_OUTPUT.PUT_LINE('Audience Count: ' || v_match_details.audience_count);
+ 12      DBMS_OUTPUT.PUT_LINE('Match Fee: ' || v_match_details.match_fee);
+ 13      DBMS_OUTPUT.PUT_LINE('Ticket Fee: ' || v_match_details.ticket_fee);
+ 14      DBMS_OUTPUT.PUT_LINE('Ground Name: ' || v_match_details.ground_name);
+ 15      DBMS_OUTPUT.PUT_LINE('Pitch: ' || v_match_details.pitch);
+ 16      DBMS_OUTPUT.PUT_LINE('Format ID: ' || v_match_details.format_id);
+ 17    ELSE
+ 18      DBMS_OUTPUT.PUT_LINE('No match found with ID M001');
+ 19    END IF;
+ 20  END;
+ 21  /
+
+Match ID: M001
+Venue: Eden Gardens
+Time: 2025-03-28 14:00:00
+Referee: Kumar Dharmasena
+Type: T20
+Audience Count: 15000
+Match Fee: 5000
+Ticket Fee: 100
+Ground Name: Eden Gardens
+Pitch: Dry
+Format ID: F001
+
+PL/SQL procedure successfully completed.
+[23bcs112@mepcolinux dbms]$exit
+exit
+
+Script done on Wed 09 Apr 2025 10:47:50 AM IST
+[23bcs112@mepcolinux dbms]$

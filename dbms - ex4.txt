@@ -1,0 +1,292 @@
+[23bcs112@mepcolinux dbms]$cat ex4.prn
+Script started on Tue 25 Feb 2025 10:50:03 AM IST
+[23bcs112@mepcolinux dbms]$cat ex4.txt
+=========================================================================
+=                                                                       =
+=                     Sets and Joins in Oracle 21c                      =
+=                                                                       =
+=========================================================================
+SQL> SELECT format_id, overs, ball_type FROM format;
+
+ FORMAT_ID    OVERS BALL_TYPE
+---------- ---------- ----------
+ FMT01             20 White Ball
+ FMT02             50 White Ball
+ FMT03             90 Red Ball
+
+
+SQL> SELECT customer_id, customer_name, email FROM customer;
+
+ CUSTOMER_ID CUSTOMER_NAME EMAIL
+------------ ------------- -------------------
+ CUST01      Siva          siva@example.com
+ CUST02      Venkatesh     venkatesh@example.com
+ CUST03      Akilan        akilan@example.com
+ CUST04      Akash         akash@example.com
+ CUST05      Sachin        sachin@example.com
+
+
+SQL> SELECT format_id FROM format UNION SELECT customer_id FROM customer;
+
+ FORMAT_ID
+------------
+ CUST01
+ CUST02
+ CUST03
+ CUST04
+ CUST05
+ FMT01
+ FMT02
+ FMT03
+
+
+SQL> SELECT format_id FROM format UNION ALL SELECT customer_id FROM customer;
+
+ FORMAT_ID
+------------
+ FMT01
+ FMT02
+ FMT03
+ CUST01
+ CUST02
+ CUST03
+ CUST04
+ CUST05
+
+
+SQL> SELECT format_id FROM format INTERSECT SELECT customer_id FROM customer;
+
+ FORMAT_ID
+------------
+-- No rows selected
+
+
+SQL> SELECT format_id FROM format MINUS SELECT customer_id FROM customer;
+
+ FORMAT_ID
+------------
+ FMT01
+ FMT02
+ FMT03
+
+
+SQL> SELECT format_id, overs, ball_type, customer_id, customer_name, email
+  2  FROM format f, customer c;
+
+ FORMAT_ID    OVERS BALL_TYPE  CUSTOMER_ID CUSTOMER_NAME EMAIL
+---------- ---------- ---------- ------------ ------------- -------------------
+ FMT01             20 White Ball  CUST01      Siva          siva@example.com
+ FMT01             20 White Ball  CUST02      Venkatesh     venkatesh@example.com
+ FMT01             20 White Ball  CUST03      Akilan        akilan@example.com
+ FMT01             20 White Ball  CUST04      Akash         akash@example.com
+ FMT01             20 White Ball  CUST05      Sachin        sachin@example.com
+ FMT02             50 White Ball  CUST01      Siva          siva@example.com
+ FMT02             50 White Ball  CUST02      Venkatesh     venkatesh@example.com
+ FMT02             50 White Ball  CUST03      Akilan        akilan@example.com
+ FMT02             50 White Ball  CUST04      Akash         akash@example.com
+ FMT02             50 White Ball  CUST05      Sachin        sachin@example.com
+ FMT03             90 Red Ball    CUST01      Siva          siva@example.com
+ FMT03             90 Red Ball    CUST02      Venkatesh     venkatesh@example.com
+ FMT03             90 Red Ball    CUST03      Akilan        akilan@example.com
+ FMT03             90 Red Ball    CUST04      Akash         akash@example.com
+ FMT03             90 Red Ball    CUST05      Sachin        sachin@example.com
+
+
+SQL> SELECT format_id, overs, ball_type, customer_id, customer_name, email
+  2  FROM format f
+  3  CROSS JOIN customer c
+  4  WHERE f.format_id = c.customer_id;
+
+ FORMAT_ID    OVERS BALL_TYPE  CUSTOMER_ID CUSTOMER_NAME EMAIL
+---------- ---------- ---------- ------------ ------------- -------------------
+-- No rows selected
+
+
+SQL> SELECT c.customer_id, c.customer_name
+  2  FROM customer c
+  3  JOIN customer_phone_number p ON c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME
+------------ -------------
+ CUST01      Siva
+ CUST02      Venkatesh
+ CUST03      Akilan
+ CUST04      Akash
+ CUST05      Sachin
+
+
+SQL> SELECT c.customer_name, c.email, p.phone_number
+  2  FROM customer c
+  3  NATURAL JOIN customer_phone_number p;
+
+ CUSTOMER_NAME EMAIL             PHONE_NUMBER
+-------------- ----------------- -------------
+ Siva          siva@example.com  9999999991
+ Venkatesh     venkatesh@example.com 9999999992
+ Akilan        akilan@example.com 9999999993
+ Akash         akash@example.com  9999999994
+ Sachin        sachin@example.com 9999999995
+
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c
+  3  INNER JOIN customer_phone_number p ON c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST01      Siva          9999999991
+ CUST02      Venkatesh     9999999992
+ CUST03      Akilan        9999999993
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c
+  3  FULL OUTER JOIN customer_phone_number p ON c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST01      Siva          9999999991
+ CUST02      Venkatesh     9999999992
+ CUST03      Akilan        9999999993
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c
+  3  LEFT OUTER JOIN customer_phone_number p ON c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST01      Siva          9999999991
+ CUST02      Venkatesh     9999999992
+ CUST03      Akilan        9999999993
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c
+  3  RIGHT OUTER JOIN customer_phone_number p ON c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST01      Siva          9999999991
+ CUST02      Venkatesh     9999999992
+ CUST03      Akilan        9999999993
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c, customer_phone_number p
+  3  WHERE c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST01      Siva          9999999991
+ CUST02      Venkatesh     9999999992
+ CUST03      Akilan        9999999993
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c, customer_phone_number p
+  3  WHERE c.customer_id <> p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST01      Siva          9999999992
+ CUST01      Siva          9999999993
+ CUST01      Siva          9999999994
+ CUST01      Siva          9999999995
+ CUST02      Venkatesh     9999999991
+ CUST02      Venkatesh     9999999993
+ CUST02      Venkatesh     9999999994
+ CUST02      Venkatesh     9999999995
+ CUST03      Akilan        9999999991
+ CUST03      Akilan        9999999992
+ CUST03      Akilan        9999999994
+ CUST03      Akilan        9999999995
+ CUST04      Akash         9999999991
+ CUST04      Akash         9999999992
+ CUST04      Akash         9999999993
+ CUST04      Akash         9999999995
+ CUST05      Sachin        9999999991
+ CUST05      Sachin        9999999992
+ CUST05      Sachin        9999999993
+ CUST05      Sachin        9999999994
+
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c
+  3  JOIN customer_phone_number p USING(customer_id);
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST01      Siva          9999999991
+ CUST02      Venkatesh     9999999992
+ CUST03      Akilan        9999999993
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+
+SQL> DELETE FROM customer WHERE customer_id IN ('CUST01', 'CUST03');
+
+2 rows deleted.
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c
+  3  LEFT OUTER JOIN customer_phone_number p ON c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST02      Venkatesh     9999999992
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c
+  3  RIGHT OUTER JOIN customer_phone_number p ON c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+                           9999999991
+ CUST02      Venkatesh     9999999992
+                           9999999993
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c
+  3  LEFT OUTER JOIN customer_phone_number p ON c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST01      Siva
+ CUST02      Venkatesh     9999999992
+ CUST03      Akilan
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+
+SQL> SELECT c.customer_id, c.customer_name, p.phone_number
+  2  FROM customer c
+  3  FULL OUTER JOIN customer_phone_number p ON c.customer_id = p.customer_id;
+
+ CUSTOMER_ID CUSTOMER_NAME PHONE_NUMBER
+------------ ------------- ------------
+ CUST01      Siva
+ CUST02      Venkatesh     9999999992
+ CUST03      Akilan
+ CUST04      Akash         9999999994
+ CUST05      Sachin        9999999995
+                           9999999991
+                           9999999993
+
+
+
+[23bcs112@mepcolinux dbms]$exit
+exit

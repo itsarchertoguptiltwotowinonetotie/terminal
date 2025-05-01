@@ -1,0 +1,425 @@
+[23bcs112@mepcolinux dbms]$cat ex9.prn
+Script started on Wed 09 Apr 2025 10:46:57 AM IST
+[23bcs112@mepcolinux dbms]$cat ex9.txt
+
+SQL> CREATE OR REPLACE FUNCTION get_match_count
+  2  RETURN NUMBER
+  3  IS
+  4    match_count NUMBER;
+  5  BEGIN
+  6    SELECT COUNT(*) INTO match_count FROM matches;
+  7    RETURN match_count;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0; -- Return 0 if any error occurs
+ 11  END get_match_count;
+ 12  /
+
+Function created.
+
+SQL> DECLARE
+  2  BEGIN
+  3    DBMS_OUTPUT.PUT_LINE('Count of matches: ' || get_match_count);
+  4  END;
+  5  /
+
+Count of matches: 20
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_match_venue(match_id IN VARCHAR2)
+  2  RETURN VARCHAR2
+  3  IS
+  4    m_venue VARCHAR2(255);
+  5  BEGIN
+  6    SELECT match_venue INTO m_venue FROM matches WHERE match_id = match_id;
+  7    RETURN m_venue;
+  8  EXCEPTION
+  9    WHEN NO_DATA_FOUND THEN
+ 10      RETURN NULL;
+ 11  END get_match_venue;
+ 12  /
+
+Function created.
+
+SQL> DECLARE
+  2  BEGIN
+  3    DBMS_OUTPUT.PUT_LINE('Match venue: ' || get_match_venue('M001'));
+  4  END;
+  5  /
+
+Match venue: Eden Gardens
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION match_exists(p_match_id VARCHAR2)
+  2  RETURN BOOLEAN
+  3  AS
+  4    v_match_id VARCHAR2(10);
+  5  BEGIN
+  6    SELECT match_id INTO v_match_id
+  7    FROM matches
+  8    WHERE match_id = p_match_id;
+  9    RETURN TRUE;
+ 10  EXCEPTION
+ 11    WHEN NO_DATA_FOUND THEN
+ 12      RETURN FALSE;
+ 13  END match_exists;
+ 14  /
+
+Function created.
+
+SQL> DECLARE
+  2    v_result BOOLEAN;
+  3  BEGIN
+  4    v_result := match_exists('M002');
+  5    IF v_result THEN
+  6      DBMS_OUTPUT.PUT_LINE('Match exists');
+  7    ELSE
+  8      DBMS_OUTPUT.PUT_LINE('Match does not exist');
+  9    END IF;
+ 10  END;
+ 11  /
+
+Match exists
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_total_audience(match_id IN VARCHAR2)
+  2  RETURN NUMBER
+  3  IS
+  4    total_audience NUMBER;
+  5  BEGIN
+  6    SELECT audience_count INTO total_audience FROM matches WHERE match_id = match_id;
+  7    RETURN total_audience;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_total_audience;
+ 12  /
+
+Function created.
+
+SQL> DECLARE
+  2  BEGIN
+  3    DBMS_OUTPUT.PUT_LINE('Total audience count: ' || get_total_audience('M003'));
+  4  END;
+  5  /
+
+Total audience count: 15000
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_avg_match_fee
+  2  RETURN NUMBER
+  3  IS
+  4    avg_fee NUMBER;
+  5  BEGIN
+  6    SELECT AVG(match_fee) INTO avg_fee FROM matches;
+  7    RETURN avg_fee;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_avg_match_fee;
+ 12  /
+
+Function created.
+
+SQL> SELECT get_avg_match_fee AS average_match_fee FROM dual;
+
+AVERAGE_MATCH_FEE
+-----------------
+             5000
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_team_count_in_match(match_id IN VARCHAR2)
+  2  RETURN NUMBER
+  3  IS
+  4    team_count NUMBER;
+  5  BEGIN
+  6    SELECT COUNT(*) INTO team_count FROM teams WHERE match_id = match_id;
+  7    RETURN team_count;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_team_count_in_match;
+ 12  /
+
+Function created.
+
+SQL> SELECT get_team_count_in_match('M001') AS team_count FROM dual;
+
+TEAM_COUNT
+----------
+         2
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_fantasy_team_count
+  2  RETURN NUMBER
+  3  IS
+  4    fantasy_team_count NUMBER;
+  5  BEGIN
+  6    SELECT COUNT(*) INTO fantasy_team_count FROM fantasy_11;
+  7    RETURN fantasy_team_count;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_fantasy_team_count;
+ 12  /
+
+Function created.
+
+SQL> SELECT get_fantasy_team_count AS fantasy_team_count FROM dual;
+
+FANTASY_TEAM_COUNT
+------------------
+                10
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_total_bet_amount(fantasy_id IN VARCHAR2)
+  2  RETURN NUMBER
+  3  IS
+  4    total_bet NUMBER;
+  5  BEGIN
+  6    SELECT SUM(bet_amount) INTO total_bet FROM fantasy_11 WHERE fantasy_id = fantasy_id;
+  7    RETURN total_bet;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_total_bet_amount;
+ 12  /
+
+Function created.
+
+SQL> DECLARE
+  2  BEGIN
+  3    DBMS_OUTPUT.PUT_LINE('Total bet amount: ' || get_total_bet_amount('F001'));
+  4  END;
+  5  /
+
+Total bet amount: 5000
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_fantasy_team_position(fantasy_id IN VARCHAR2)
+  2  RETURN NUMBER
+  3  IS
+  4    team_position NUMBER;
+  5  BEGIN
+  6    SELECT position INTO team_position FROM leaderboard WHERE fantasy_id = fantasy_id;
+  7    RETURN team_position;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_fantasy_team_position;
+ 12  /
+
+Function created.
+
+SQL> SELECT get_fantasy_team_position('F001') AS team_position FROM dual;
+
+TEAM_POSITION
+-------------
+            1
+
+PL/SQL procedure successfully completed.
+
+
+SQL> CREATE OR REPLACE FUNCTION get_total_points(team_id IN VARCHAR2)
+  2  RETURN NUMBER
+  3  IS
+  4    total_points NUMBER;
+  5  BEGIN
+  6    SELECT points INTO total_points FROM points_table WHERE team_id = team_id;
+  7    RETURN total_points;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_total_points;
+ 12  /
+
+Function created.
+
+SQL> SELECT get_total_points('T001') AS total_points FROM dual;
+
+TOTAL_POINTS
+------------
+          20
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_matches_played_by_team(team_id IN VARCHAR2)
+  2  RETURN NUMBER
+  3  IS
+  4    matches_played NUMBER;
+  5  BEGIN
+  6    SELECT m_played INTO matches_played FROM points_table WHERE team_id = team_id;
+  7    RETURN matches_played;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_matches_played_by_team;
+ 12  /
+
+Function created.
+
+SQL> SELECT get_matches_played_by_team('T001') AS matches_played FROM dual;
+
+MATCHES_PLAYED
+--------------
+            10
+
+PL/SQL procedure successfully completed.
+
+
+SQL> CREATE OR REPLACE FUNCTION get_matches_won_by_team(team_id IN VARCHAR2)
+  2  RETURN NUMBER
+  3  IS
+  4    matches_won NUMBER;
+  5  BEGIN
+  6    SELECT m_won INTO matches_won FROM points_table WHERE team_id = team_id;
+  7    RETURN matches_won;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_matches_won_by_team;
+ 12  /
+
+Function created.
+
+SQL> SELECT get_matches_won_by_team('T001') AS matches_won FROM dual;
+
+MATCHES_WON
+-----------
+          7
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_team_nrr(team_id IN VARCHAR2)
+  2  RETURN NUMBER
+  3  IS
+  4    team_nrr NUMBER;
+  5  BEGIN
+  6    SELECT NRR INTO team_nrr FROM points_table WHERE team_id = team_id;
+  7    RETURN team_nrr;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_team_nrr;
+ 12  /
+
+Function created.
+
+SQL> SELECT get_team_nrr('T001') AS team_nrr FROM dual;
+
+   TEAM_NRR
+-----------
+       1.25
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_team_win_percentage(team_id IN VARCHAR2)
+  2  RETURN NUMBER
+  3  IS
+  4    win_percentage NUMBER;
+  5  BEGIN
+  6    SELECT win_percentage INTO win_percentage FROM points_table WHERE team_id = team_id;
+  7    RETURN win_percentage;
+  8  EXCEPTION
+  9    WHEN OTHERS THEN
+ 10      RETURN 0;
+ 11  END get_team_win_percentage;
+ 12  /
+
+Function created.
+
+SQL> SELECT get_team_win_percentage('T001') AS win_percentage FROM dual;
+
+WIN_PERCENTAGE
+--------------
+            70
+
+PL/SQL procedure successfully completed.
+
+
+
+SQL> CREATE OR REPLACE FUNCTION get_match_details(p_match_id IN VARCHAR2)
+  2  RETURN matches%ROWTYPE
+  3  IS
+  4    v_match matches%ROWTYPE;
+  5  BEGIN
+  6    SELECT * INTO v_match FROM matches WHERE match_id = p_match_id;
+  7    RETURN v_match;
+  8  EXCEPTION
+  9    WHEN NO_DATA_FOUND THEN
+ 10      RETURN NULL;
+ 11  END get_match_details;
+ 12  /
+
+Function created.
+
+SQL> DECLARE
+  2    v_match matches%ROWTYPE;
+  3  BEGIN
+  4    v_match := get_match_details('M001');
+  5    IF v_match IS NOT NULL THEN
+  6      DBMS_OUTPUT.PUT_LINE('Match ID: ' || v_match.match_id);
+  7      DBMS_OUTPUT.PUT_LINE('Venue: ' || v_match.match_venue);
+  8      DBMS_OUTPUT.PUT_LINE('Time: ' || v_match.match_time);
+  9      DBMS_OUTPUT.PUT_LINE('Referee: ' || v_match.match_refree);
+ 10      DBMS_OUTPUT.PUT_LINE('Type: ' || v_match.match_type);
+ 11      DBMS_OUTPUT.PUT_LINE('Audience Count: ' || v_match.audience_count);
+ 12      DBMS_OUTPUT.PUT_LINE('Match Fee: ' || v_match.match_fee);
+ 13      DBMS_OUTPUT.PUT_LINE('Ticket Fee: ' || v_match.ticket_fee);
+ 14      DBMS_OUTPUT.PUT_LINE('Ground Name: ' || v_match.ground_name);
+ 15      DBMS_OUTPUT.PUT_LINE('Pitch: ' || v_match.pitch);
+ 16      DBMS_OUTPUT.PUT_LINE('Format ID: ' || v_match.format_id);
+ 17    ELSE
+ 18      DBMS_OUTPUT.PUT_LINE('Match not found.');
+ 19    END IF;
+ 20  END;
+ 21  /
+
+Match ID: M001
+Venue: Eden Gardens
+Time: 2025-03-28 14:00:00
+Referee: Kumar Dharmasena
+Type: T20
+Audience Count: 15000
+Match Fee: 5000
+Ticket Fee: 100
+Ground Name: Eden Gardens
+Pitch: Dry
+Format ID: F001
+
+PL/SQL procedure successfully completed.
+[23bcs112@mepcolinux dbms]$exit
+exit
+
+Script done on Wed 09 Apr 2025 10:47:06 AM IST
+[23bcs112@mepcolinux dbms]$

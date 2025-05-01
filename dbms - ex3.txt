@@ -1,0 +1,1038 @@
+[23bcs112@mepcolinux dbms]$cat ex3.prn
+Script started on Tue 25 Feb 2025 10:48:56 AM IST
+[23bcs112@mepcolinux dbms]$cat ex3.txt
+=========================================================================
+=                                                                       =
+=                     DATA MAUPULATION LANGUAGE (DML)                   =
+=                                                                       =
+=========================================================================
+
+INSERT ALL
+    INTO format (format_id, overs, ball_type, powerplay_till) VALUES ('T20', 20, 'White', 6)
+    INTO format (format_id, overs, ball_type, powerplay_till) VALUES ('Test', 0, 'Red', 0)
+SELECT * FROM dual;
+
+SQL> SELECT * FROM format FETCH FIRST 3 ROWS ONLY;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+
+
+SQL> INSERT INTO format (format_id, overs, ball_type, powerplay_till)
+  2  VALUES ('C_ODI', 60, 'Red', 13);
+
+1 row created.
+
+SQL> select * from format;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+=========================================================================
+
+INSERT ALL
+    INTO leaderboard (leader_board_id, position, total_points, fantasy_id) VALUES ('L004', 4, 700, 'F004')
+    INTO leaderboard (leader_board_id, position, total_points, fantasy_id) VALUES ('L005', 5, 600, 'F005')
+    INTO leaderboard (leader_board_id, position, total_points, fantasy_id) VALUES ('L006', 6, 500, 'F006')
+    INTO leaderboard (leader_board_id, position, total_points, fantasy_id) VALUES ('L007', 7, 800, 'F007')
+    INTO leaderboard (leader_board_id, position, total_points, fantasy_id) VALUES ('L008', 8, 900, 'F008')
+SELECT * FROM dual;
+
+SQL> SELECT * FROM leaderboard FETCH FIRST 3 ROWS ONLY;
+
+LEADE   POSITION TOTAL_POINTS FANTA
+----- ---------- ------------ -----
+L004           4          700 F004
+L005           5          600 F005
+L006           6          500 F006
+
+=========================================================================
+
+SQL> CREATE TABLE FORMAT1 AS SELECT * FROM FORMAT;
+
+Table created.
+
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+=========================================================================
+SQL> delete format1;
+
+4 rows deleted.
+
+SQL> select * from format1;
+
+no rows selected
+=========================================================================
+
+SQL> delete from format where format_id = 'C_ODI';
+
+1 row deleted.
+
+SQL> rollback;
+
+Rollback complete.
+
+=========================================================================
+
+SQL> select * from format;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+SQL> delete from format where format_id like 'C_ODI';
+
+1 row deleted.
+
+SQL> select * from format;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+
+SQL> rollback;
+
+Rollback complete.
+=========================================================================
+
+SQL> select * from format;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+SQL> delete from format where format_id like 'C_ODI' and OVERS = 50;i
+
+0 rows deleted.
+
+SQL> delete from format where format_id like 'C_ODI' and OVERS = 60;
+
+1 row deleted.
+
+SQL> select * from format;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+
+SQL> rollback
+  2  ;
+
+Rollback complete.
+
+SQL> delete from format where format_id like 'C_ODI' or OVERS = 60;
+
+1 row deleted.
+
+SQL> select * from format;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+
+SQL> rollback;
+
+Rollback complete.
+=========================================================================
+
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+SQL> delete from format1 where ball_type like 'W%';
+
+2 rows deleted.
+
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+=========================================================================
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+SQL> delete from format1 where ball_type like 'W%' and overs = 50;
+
+1 row deleted.
+
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+=========================================================================
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+SQL> delete from format1 where ball_type like '%l' and overs = 50;
+
+1 row deleted.
+
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+=========================================================================
+
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+SQL> delete from format1 where ball_type not like 'W%';
+
+2 rows deleted.
+
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+=========================================================================
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+Test           0 Red                     0
+C_ODI         60 Red                    13
+
+SQL> delete from format1 where ball_type like '___';
+
+2 rows deleted.
+
+SQL> select * from format1;
+
+FORMA      OVERS BALL_TYPE  POWERPLAY_TILL
+----- ---------- ---------- --------------
+ODI           50 White Ball             10
+T20           20 White                   6
+=========================================================================
+SQL> select * from points_table;
+
+POINT   POSITION     POINTS   M_PLAYED      M_WON        NRR     M_LOST  NO_RESULT WIN_PERCENTAGE TEAM_
+----- ---------- ---------- ---------- ---------- ---------- ---------- ---------- -------------- -----
+PT004          4         35         22         12          1          6          4           54.5 T004
+PT005          5         28         18         10         .7          5          3           55.6 T005
+PT006          6         22         20         10         .4          8          2             50 T006
+PT007          7         30         15          7         .6          7          1           46.7 T007
+PT008          8         25         25         10         .5         10          5             40 T008
+
+SQL> update points_table set win_percentage = 0 where 1=1;
+
+5 rows updated.
+
+SQL> select * from points_table;
+
+POINT   POSITION     POINTS   M_PLAYED      M_WON        NRR     M_LOST  NO_RESULT WIN_PERCENTAGE TEAM_
+----- ---------- ---------- ---------- ---------- ---------- ---------- ---------- -------------- -----
+PT004          4         35         22         12          1          6          4              0 T004
+PT005          5         28         18         10         .7          5          3              0 T005
+PT006          6         22         20         10         .4          8          2              0 T006
+PT007          7         30         15          7         .6          7          1              0 T007
+PT008          8         25         25         10         .5         10          5              0 T008
+
+SQL> update points_table set win_percentage = (M_WON/M_PLAYED)*100 where 1=1;
+
+5 rows updated.
+
+SQL> select * from points_table;
+
+POINT   POSITION     POINTS   M_PLAYED      M_WON        NRR     M_LOST  NO_RESULT WIN_PERCENTAGE TEAM_
+----- ---------- ---------- ---------- ---------- ---------- ---------- ---------- -------------- -----
+PT004          4         35         22         12          1          6          4     54.5454545 T004
+PT005          5         28         18         10         .7          5          3     55.5555556 T005
+PT006          6         22         20         10         .4          8          2             50 T006
+PT007          7         30         15          7         .6          7          1     46.6666667 T007
+PT008          8         25         25         10         .5         10          5             40 T008
+
+SQL> rollback;
+
+Rollback complete.
+
+SQL> select * from points_table;
+
+POINT   POSITION     POINTS   M_PLAYED      M_WON        NRR     M_LOST  NO_RESULT WIN_PERCENTAGE TEAM_
+----- ---------- ---------- ---------- ---------- ---------- ---------- ---------- -------------- -----
+PT004          4         35         22         12          1          6          4           54.5 T004
+PT005          5         28         18         10         .7          5          3           55.6 T005
+PT006          6         22         20         10         .4          8          2             50 T006
+PT007          7         30         15          7         .6          7          1           46.7 T007
+PT008          8         25         25         10         .5         10          5             40 T008
+
+SQL> update points_table set win_percentage = 0 where 1=1;
+
+5 rows updated.
+
+SQL> update points_table set win_percentage = trunc((M_WON/M_PLAYED)*100) where 1=1;
+
+5 rows updated.
+
+SQL> select * from points_table;
+
+POINT   POSITION     POINTS   M_PLAYED      M_WON        NRR     M_LOST  NO_RESULT WIN_PERCENTAGE TEAM_
+----- ---------- ---------- ---------- ---------- ---------- ---------- ---------- -------------- -----
+PT004          4         35         22         12          1          6          4             54 T004
+PT005          5         28         18         10         .7          5          3             55 T005
+PT006          6         22         20         10         .4          8          2             50 T006
+PT007          7         30         15          7         .6          7          1             46 T007
+PT008          8         25         25         10         .5         10          5             40 T008
+=========================================================================
+
+=========================================================================
+=                                                                       =
+=                     DATA QUERRY LANGUAGE (DQL)                        =
+=                                                                       =
+=========================================================================
+SQL> SELECT customer_id, customer_name, customer_gender FROM customer;
+
+    CUSTOMER_ID CUSTOMER_NAME    CUSTOMER_GENDER
+--------------- --------------- ---------------
+            101 Akilan           Male
+            102 Akash            Male
+            103 Mohan            Male
+            104 Naveen           Male
+            105 Durai            Male
+
+
+SQL> SELECT match_id, match_venue, audience_count FROM matches;
+
+    MATCH_ID MATCH_VENUE              AUDIENCE_COUNT
+------------- ------------------------ ---------------
+           21 Wankhede Stadium                  50000
+           22 M. A. Chidambaram Stadium         45000
+           23 Eden Gardens                      30000
+
+
+SQL> SELECT match_id, match_venue, audience_count + 10000 AS increased_audience FROM matches;
+
+    MATCH_ID MATCH_VENUE              INCREASED_AUDIENCE
+------------- ------------------------ ------------------
+           21 Wankhede Stadium                      60000
+           22 M. A. Chidambaram Stadium             55000
+           23 Eden Gardens                          40000
+
+
+SQL> SELECT match_id, match_venue, audience_count - 5000 AS decreased_audience FROM matches;
+
+    MATCH_ID MATCH_VENUE              DECREASED_AUDIENCE
+------------- ------------------------ ------------------
+           21 Wankhede Stadium                      45000
+           22 M. A. Chidambaram Stadium             40000
+           23 Eden Gardens                          25000
+
+
+SQL> SELECT match_id, match_venue, audience_count * 2 AS double_audience FROM matches;
+
+    MATCH_ID MATCH_VENUE              DOUBLE_AUDIENCE
+------------- ------------------------ ---------------
+           21 Wankhede Stadium                 100000
+           22 M. A. Chidambaram Stadium         90000
+           23 Eden Gardens                      60000
+
+
+SQL> SELECT match_id, match_venue, audience_count / 2 AS half_audience FROM matches;
+
+    MATCH_ID MATCH_VENUE              HALF_AUDIENCE
+------------- ------------------------ ---------------
+           21 Wankhede Stadium                  25000
+           22 M. A. Chidambaram Stadium         22500
+           23 Eden Gardens                      15000
+
+
+SQL> SELECT match_venue || ' has audience of ' || audience_count AS match_info FROM matches;
+
+MATCH_INFO
+-----------------------------------------------------
+Wankhede Stadium has audience of 50000
+M. A. Chidambaram Stadium has audience of 45000
+Eden Gardens has audience of 30000
+
+
+SQL> SELECT match_id, match_venue FROM matches WHERE audience_count > 30000;
+
+    MATCH_ID MATCH_VENUE
+------------- ------------------------
+           21 Wankhede Stadium
+           22 M. A. Chidambaram Stadium
+
+
+SQL> SELECT match_id, match_venue FROM matches WHERE audience_count <= 30000;
+
+    MATCH_ID MATCH_VENUE
+------------- ------------------------
+           23 Eden Gardens
+
+
+SQL> SELECT match_id, match_venue FROM matches WHERE audience_count > 30000 AND match_venue = 'Wankhede Stadium';
+
+    MATCH_ID MATCH_VENUE
+------------- ------------------------
+           21 Wankhede Stadium
+
+
+SQL> SELECT customer_name, customer_gender FROM customer;
+
+CUSTOMER_NAME    CUSTOMER_GENDER
+--------------- ---------------
+Akilan           Male
+Akash            Male
+Mohan            Male
+Naveen           Male
+Durai            Male
+
+
+SQL> SELECT customer_id, customer_name FROM customer WHERE customer_gender IN ('Male', 'Female');
+
+    CUSTOMER_ID CUSTOMER_NAME
+--------------- ---------------
+            101 Akilan
+            102 Akash
+            103 Mohan
+            104 Naveen
+            105 Durai
+
+
+SQL> SELECT customer_id, customer_name FROM customer WHERE customer_name LIKE 'A%';
+
+    CUSTOMER_ID CUSTOMER_NAME
+--------------- ---------------
+            101 Akilan
+            102 Akash
+
+
+SQL> SELECT customer_id, customer_name FROM customer WHERE customer_name NOT LIKE 'A%';
+
+    CUSTOMER_ID CUSTOMER_NAME
+--------------- ---------------
+            103 Mohan
+            104 Naveen
+            105 Durai
+
+
+SQL> SELECT customer_id, customer_name FROM customer WHERE customer_name LIKE '___i%';
+
+    CUSTOMER_ID CUSTOMER_NAME
+--------------- ---------------
+            101 Akilan
+            105 Durai
+
+
+SQL> SELECT customer_id, customer_name FROM customer WHERE customer_name LIKE '%i';
+
+    CUSTOMER_ID CUSTOMER_NAME
+--------------- ---------------
+            101 Akilan
+            105 Durai
+
+
+SQL> SELECT fantasy_id, lower(fantasy_name) AS fantasy_name FROM fantasy_11;
+
+    FANTASY_ID FANTASY_NAME
+--------------- ---------------
+           F1 akilan's team
+           F2 akash's team
+
+
+SQL> SELECT fantasy_id, initcap(fantasy_name) AS fantasy_name FROM fantasy_11;
+
+    FANTASY_ID FANTASY_NAME
+--------------- ---------------
+           F1 Akilan's Team
+           F2 Akash's Team
+
+
+SQL> SELECT fantasy_id, concat('Team: ', initcap(fantasy_name)) AS fantasy_name FROM fantasy_11;
+
+    FANTASY_ID FANTASY_NAME
+--------------- -------------------
+           F1 Team: Akilan's Team
+           F2 Team: Akash's Team
+
+
+SQL> SELECT fantasy_id, substr(initcap(fantasy_name), 1, 4) AS fantasy_name FROM fantasy_11;
+
+    FANTASY_ID FANTASY_NAME
+--------------- ---------------
+           F1 Akil
+           F2 Akas
+
+
+SQL> SELECT fantasy_id, length(fantasy_name) AS length_fantasy_name FROM fantasy_11;
+
+    FANTASY_ID LENGTH_FANTASY_NAME
+--------------- -------------------
+           F1                   12
+           F2                   12
+
+
+SQL> SELECT fantasy_id, instr(fantasy_name, 'i') AS position_fantasy_name FROM fantasy_11;
+
+    FANTASY_ID POSITION_FANTASY_NAME
+--------------- --------------------
+           F1                        2
+           F2                        3
+
+
+SQL> SELECT fantasy_id, rpad(fantasy_name, 15, '-') AS padded_fantasy_name FROM fantasy_11;
+
+    FANTASY_ID PADDED_FANTASY_NAME
+--------------- --------------------
+           F1 Akilan's Team----
+           F2 Akash's Team-----
+
+
+SQL> SELECT fantasy_id, lpad(fantasy_name, 15, '=') AS padded_fantasy_name FROM fantasy_11;
+
+    FANTASY_ID PADDED_FANTASY_NAME
+--------------- --------------------
+           F1 ======Akilan's Team
+           F2 =======Akash's Team
+
+
+SQL> SELECT replace(fantasy_name, 'Akilan', 'Captain Akilan') AS replaced_fantasy_name FROM fantasy_11;
+
+REPLACED_FANTASY_NAME
+---------------------
+Captain Akilan's Team
+Akash's Team
+
+
+SQL> SELECT fantasy_id, ascii(fantasy_name) AS ascii_fantasy_name FROM fantasy_11;
+
+    FANTASY_ID ASCII_FANTASY_NAME
+--------------- ------------------
+           F1                   65
+           F2                   65
+
+
+SQL> SELECT match_id, round(audience_count) AS rounded_audience FROM matches;
+
+    MATCH_ID ROUNDED_AUDIENCE
+------------- ----------------
+           21            50000
+           22            45000
+           23            30000
+
+
+SQL> SELECT match_id, round(audience_count, 0) AS rounded_audience FROM matches;
+
+    MATCH_ID ROUNDED_AUDIENCE
+------------- ----------------
+           21            50000
+           22            45000
+           23            30000
+
+
+SQL> SELECT match_id, round(audience_count, 2) AS rounded_audience FROM matches;
+
+    MATCH_ID ROUNDED_AUDIENCE
+------------- ----------------
+           21            50000.00
+           22            45000.00
+           23            30000.00
+
+
+SQL> SELECT match_id, round(audience_count, -1) AS rounded_audience FROM matches;
+
+    MATCH_ID ROUNDED_AUDIENCE
+------------- ----------------
+           21            50000
+           22            45000
+           23            30000
+
+
+SQL> SELECT match_id, trunc(audience_count) AS truncated_audience FROM matches;
+
+    MATCH_ID TRUNCATED_AUDIENCE
+------------- -----------------
+           21            50000
+           22            45000
+           23            30000
+
+
+SQL> SELECT match_id, trunc(audience_count, -1) AS truncated_audience FROM matches;
+
+    MATCH_ID TRUNCATED_AUDIENCE
+------------- -----------------
+           21            50000
+           22            45000
+           23            30000
+
+
+SQL> SELECT match_id, mod(audience_count, 10000) AS audience_mod FROM matches;
+
+    MATCH_ID AUDIENCE_MOD
+------------- ------------
+           21         0
+           22         0
+           23         0
+
+
+SQL> SELECT match_id, ceil(audience_count) AS ceil_audience FROM matches;
+
+    MATCH_ID CEIL_AUDIENCE
+------------- ------------
+           21         50000
+           22         45000
+           23         30000
+
+
+SQL> SELECT match_id, floor(audience_count) AS floor_audience FROM matches;
+
+    MATCH_ID FLOOR_AUDIENCE
+------------- --------------
+           21         50000
+           22         45000
+           23         30000
+
+
+SQL> SELECT match_id, match_time, match_time + 5 AS new_time FROM matches;
+
+    MATCH_ID MATCH_TIME           NEW_TIME
+------------- ------------------- -------------------
+           21 2025-02-19 15:08:28 2025-02-24 15:08:28
+           22 2025-02-19 15:08:28 2025-02-24 15:08:28
+           23 2025-02-19 15:08:28 2025-02-24 15:08:28
+
+
+SQL> SELECT match_id, match_time, match_time - 5 AS new_time FROM matches;
+
+    MATCH_ID MATCH_TIME           NEW_TIME
+------------- ------------------- -------------------
+           21 2025-02-19 15:08:28 2025-02-14 15:08:28
+           22 2025-02-19 15:08:28 2025-02-14 15:08:28
+           23 2025-02-19 15:08:28 2025-02-14 15:08:28
+
+
+SQL> SELECT match_id, match_time - SYSDATE AS day_difference FROM matches;
+
+    MATCH_ID DAY_DIFFERENCE
+------------- ----------------
+           21          -0.5
+           22          -0.5
+           23          -0.5
+
+
+SQL> SELECT match_id, SYSDATE - match_time AS day_difference FROM matches;
+
+    MATCH_ID DAY_DIFFERENCE
+------------- ----------------
+           21           0.5
+           22           0.5
+           23           0.5
+
+
+SQL> SELECT match_id, trunc(SYSDATE - match_time) AS day_difference FROM matches;
+
+    MATCH_ID DAY_DIFFERENCE
+------------- --------------
+           21            0
+           22            0
+           23            0
+
+
+SQL> SELECT match_id, trunc(match_time - TO_DATE('2025-01-01', 'YYYY-MM-DD')) AS day_difference FROM matches;
+
+    MATCH_ID DAY_DIFFERENCE
+------------- --------------
+           21            49
+           22            49
+           23            49
+
+
+SQL> UPDATE customer SET customer_age = customer_age + 1;
+
+5 rows updated.
+
+SQL> SELECT customer_id, customer_name, customer_age FROM customer;
+
+    CUSTOMER_ID CUSTOMER_NAME    CUSTOMER_AGE
+--------------- --------------- -------------
+            101 Akilan                      31
+            102 Akash                       32
+            103 Mohan                       28
+            104 Naveen                      30
+            105 Durai                       35
+
+
+SQL> SELECT customer_id, customer_name, customer_gender, CASE WHEN customer_age >= 30 THEN 'Senior' ELSE 'Junior' END AS category FROM customer;
+
+    CUSTOMER_ID CUSTOMER_NAME    CUSTOMER_GENDER CATEGORY
+--------------- --------------- --------------- ------------
+            101 Akilan           Male            Senior
+            102 Akash            Male            Senior
+            103 Mohan            Male            Junior
+            104 Naveen           Male            Senior
+            105 Durai            Male            Senior
+
+
+SQL> SELECT fantasy_id, fantasy_name FROM fantasy_11 WHERE total_credit > 50;
+
+    FANTASY_ID FANTASY_NAME
+--------------- ---------------
+           F1 Akilan's Team
+
+
+SQL> SELECT customer_id, customer_name FROM customer WHERE customer_name NOT LIKE 'A%';
+
+    CUSTOMER_ID CUSTOMER_NAME
+--------------- ---------------
+            103 Mohan
+            104 Naveen
+            105 Durai
+
+
+SQL> SELECT match_id, match_venue, match_time FROM matches ORDER BY match_time;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME
+------------- ------------------------ -------------------
+           21 Wankhede Stadium         2025-01-01 10:00:00
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00
+           23 Eden Gardens             2025-03-01 10:00:00
+
+
+SQL> SELECT match_id, match_venue, match_time FROM matches ORDER BY match_time DESC;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME
+------------- ------------------------ -------------------
+           23 Eden Gardens             2025-03-01 10:00:00
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00
+           21 Wankhede Stadium         2025-01-01 10:00:00
+
+
+SQL> SELECT match_venue FROM matches GROUP BY match_venue;
+
+MATCH_VENUE
+---------------
+Wankhede Stadium
+M. A. Chidambaram Stadium
+Eden Gardens
+
+
+SQL> SELECT match_venue, COUNT(*) AS match_count FROM matches GROUP BY match_venue;
+
+MATCH_VENUE              MATCH_COUNT
+---------------          ------------
+Wankhede Stadium                  1
+M. A. Chidambaram Stadium         1
+Eden Gardens                      1
+
+
+SQL> SELECT match_id, SUM(audience_count) AS total_audience FROM matches GROUP BY match_id;
+
+    MATCH_ID TOTAL_AUDIENCE
+------------- --------------
+           21           50000
+           22           45000
+           23           30000
+
+
+SQL> SELECT match_id, SUM(audience_count) AS total_audience FROM matches GROUP BY match_id HAVING SUM(audience_count) >= 40000;
+
+    MATCH_ID TOTAL_AUDIENCE
+------------- --------------
+           21           50000
+           22           45000
+
+
+SQL> SELECT match_id, match_venue, match_time, ADD_MONTHS(match_time, 2) AS updated_time FROM matches;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME           UPDATED_TIME
+------------- ------------------------ ------------------- -------------------
+           21 Wankhede Stadium         2025-01-01 10:00:00 2025-03-01 10:00:00
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00 2025-04-01 10:00:00
+           23 Eden Gardens             2025-03-01 10:00:00 2025-05-01 10:00:00
+
+
+SQL> SELECT match_id, match_venue, match_time, ADD_MONTHS(match_time, -2) AS updated_time FROM matches;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME           UPDATED_TIME
+------------- ------------------------ ------------------- -------------------
+           21 Wankhede Stadium         2025-01-01 10:00:00 2024-11-01 10:00:00
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00 2024-12-01 10:00:00
+           23 Eden Gardens             2025-03-01 10:00:00 2025-01-01 10:00:00
+
+
+SQL> SELECT match_id, match_venue, match_time, MONTHS_BETWEEN(match_time, SYSDATE) AS months_difference FROM matches;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME           MONTHS_DIFFERENCE
+------------- ------------------------ ------------------- ------------------
+           21 Wankhede Stadium         2025-01-01 10:00:00              1.5
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00              0.5
+           23 Eden Gardens             2025-03-01 10:00:00             -0.5
+
+
+SQL> SELECT match_id, match_venue, match_time, NEXT_DAY(match_time, 'MONDAY') AS next_monday FROM matches;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME           NEXT_MONDAY
+------------- ------------------------ ------------------- -------------------
+           21 Wankhede Stadium         2025-01-01 10:00:00 2025-01-06 10:00:00
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00 2025-02-03 10:00:00
+           23 Eden Gardens             2025-03-01 10:00:00 2025-03-03 10:00:00
+
+
+SQL> SELECT match_id, match_venue, match_time, LAST_DAY(match_time) AS last_day_of_month FROM matches;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME           LAST_DAY_OF_MONTH
+------------- ------------------------ ------------------- -------------------
+           21 Wankhede Stadium         2025-01-01 10:00:00 2025-01-31 10:00:00
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00 2025-02-28 10:00:00
+           23 Eden Gardens             2025-03-01 10:00:00 2025-03-31 10:00:00
+
+
+SQL> SELECT match_id, match_venue, match_time, EXTRACT(MONTH FROM match_time) AS month FROM matches;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME           MONTH
+------------- ------------------------ ------------------- ------
+           21 Wankhede Stadium         2025-01-01 10:00:00     1
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00     2
+           23 Eden Gardens             2025-03-01 10:00:00     3
+
+SQL> SELECT match_id, EXTRACT(YEAR FROM match_time) AS year FROM matches;
+
+    MATCH_ID YEAR
+------------- ----
+           21 2025
+           22 2025
+           23 2025
+
+
+SQL> SELECT match_id, ROUND(match_time, 'YYYY') AS rounded_year FROM matches;
+
+    MATCH_ID ROUNDED_YEAR
+------------- -------------------
+           21 01-JAN-26
+           22 01-JAN-26
+           23 01-JAN-25
+
+
+SQL> SELECT match_id, ROUND(match_time, 'MM') AS rounded_month FROM matches;
+
+    MATCH_ID ROUNDED_MONTH
+------------- -------------------
+           21 01-NOV-25
+           22 01-NOV-25
+           23 01-JAN-25
+
+
+SQL> SELECT match_id, TO_CHAR(match_time, 'YYYY') AS year FROM matches;
+
+    MATCH_ID YEAR
+------------- ----
+           21 2025
+           22 2025
+           23 2025
+
+
+SQL> SELECT match_id, TO_CHAR(match_time, 'YEAR') AS year FROM matches;
+
+    MATCH_ID YEAR
+------------- ------------------------
+           21 TWENTY TWENTY-FIVE
+           22 TWENTY TWENTY-FIVE
+           23 TWENTY TWENTY-FIVE
+
+
+SQL> SELECT MIN(audience_count) AS min_audience FROM matches;
+
+MIN_AUDIENCE
+------------
+       30000
+
+
+SQL> SELECT TRUNC(SUM(audience_count)) AS total_audience FROM matches;
+
+TOTAL_AUDIENCE
+--------------
+        125000
+
+
+SQL> SELECT TRUNC(MIN(audience_count)) AS min_audience FROM matches;
+
+MIN_AUDIENCE
+------------
+       30000
+
+
+SQL> SELECT TRUNC(MAX(audience_count)) AS max_audience FROM matches;
+
+MAX_AUDIENCE
+------------
+       50000
+
+
+SQL> SELECT TRUNC(MEDIAN(audience_count)) AS median_audience FROM matches;
+
+MEDIAN_AUDIENCE
+---------------
+          45000
+
+
+SQL> SELECT TRUNC(VARIANCE(audience_count)) AS variance_audience FROM matches;
+
+VARIANCE_AUDIENCE
+-----------------
+        86666666
+
+
+SQL> SELECT TRUNC(STDDEV(audience_count)) AS stddev_audience FROM matches;
+
+STDDEV_AUDIENCE
+---------------
+           9327
+
+
+SQL> SELECT match_id, match_venue, match_time, audience_count FROM matches ORDER BY match_time;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME           AUDIENCE_COUNT
+------------- ------------------------ ------------------- ---------------
+           21 Wankhede Stadium         2025-01-01 10:00:00           50000
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00           45000
+           23 Eden Gardens             2025-03-01 10:00:00           30000
+
+
+SQL> SELECT match_id, match_venue, match_time, audience_count FROM matches ORDER BY match_time DESC;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME           AUDIENCE_COUNT
+------------- ------------------------ ------------------- ---------------
+           23 Eden Gardens             2025-03-01 10:00:00           30000
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00           45000
+           21 Wankhede Stadium         2025-01-01 10:00:00           50000
+
+
+SQL> SELECT match_venue FROM matches GROUP BY match_venue;
+
+MATCH_VENUE
+---------------
+Wankhede Stadium
+M. A. Chidambaram Stadium
+Eden Gardens
+
+
+SQL> SELECT match_venue, COUNT(*) AS match_count FROM matches GROUP BY match_venue;
+
+MATCH_VENUE              MATCH_COUNT
+---------------          ------------
+Wankhede Stadium                  1
+M. A. Chidambaram Stadium         1
+Eden Gardens                      1
+
+
+SQL> SELECT match_id, SUM(audience_count) AS total_audience FROM matches GROUP BY match_id;
+
+    MATCH_ID TOTAL_AUDIENCE
+------------- --------------
+           21           50000
+           22           45000
+           23           30000
+
+
+SQL> SELECT match_id, SUM(audience_count) AS total_audience FROM matches GROUP BY match_id HAVING SUM(audience_count) >= 40000;
+
+    MATCH_ID TOTAL_AUDIENCE
+------------- --------------
+           21           50000
+           22           45000
+SQL> SELECT customer_name,
+  2      CASE WHEN TRUNC(customer_age / 365) >= 5 THEN 'SUPER SENIOR'
+  3           WHEN TRUNC(customer_age / 365) = 4 THEN 'SENIOR'
+  4           WHEN TRUNC(customer_age / 365) = 3 THEN 'JUNIOR'
+  5           WHEN TRUNC(customer_age / 365) <= 2 THEN 'FRESHER'
+  6      ELSE 'UNKNOWN'
+  7      END AS category FROM customer;
+
+CUSTOMER_NAME    CATEGORY
+--------------- ------------
+Akilan           SENIOR
+Akash            SENIOR
+Mohan            JUNIOR
+Naveen           SENIOR
+Durai            SUPER SENIOR
+
+SQL> SELECT supplier_id, supplier_name FROM supplier WHERE regular IS NOT NULL;
+
+    SUPPLIER_ID SUPPLIER_NAME
+--------------- ---------------
+           401 Ragava
+           402 Sethu
+
+SQL> SELECT customer_id, customer_name FROM customer WHERE customer_city NOT LIKE 'S%';
+
+    CUSTOMER_ID CUSTOMER_NAME
+--------------- ---------------
+            101 Akash
+            103 Mohan
+            104 Naveen
+
+SQL> SELECT match_id, match_venue, match_time, audience_count FROM matches ORDER BY match_time, audience_count DESC;
+
+    MATCH_ID MATCH_VENUE              MATCH_TIME           AUDIENCE_COUNT
+------------- ------------------------ ------------------- ---------------
+           21 Wankhede Stadium         2025-01-01 10:00:00           50000
+           22 M. A. Chidambaram Stadium 2025-02-01 10:00:00           45000
+           23 Eden Gardens             2025-03-01 10:00:00           30000
+
+
+[23bcs112@mepcolinux dbms]$exit
+exit
+
+Script done on Tue 25 Feb 2025 10:49:04 AM IST
+[23bcs112@mepcolinux dbms]$

@@ -1,0 +1,546 @@
+[23bcs112@mepcolinux dbms]$cat ex5.prn
+Script started on Tue 25 Feb 2025 10:50:55 AM IST
+[23bcs112@mepcolinux dbms]$cat ex5.txt
+SQL> SELECT AVG(customer_age) AS average_age
+FROM customer
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM fantasy_11
+    WHERE bet_amount > 500
+);
+
+AVERAGE_AGE
+-----------
+35.4
+
+
+SQL> SELECT customer_name
+FROM customer
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM fantasy_11
+    WHERE match_id IN (
+        SELECT match_id
+        FROM matches
+        WHERE match_venue = 'Wankhede Stadium'
+    )
+);
+
+CUSTOMER_NAME
+-------------
+Siva
+Venkatesh
+
+
+SQL> SELECT *
+FROM teams
+WHERE team_id IN (
+    SELECT team_id
+    FROM points_table
+    WHERE win_percentage = (
+        SELECT MAX(win_percentage)
+        FROM points_table
+    )
+);
+
+TEAM_ID  TEAM_NAME          COACH_NAME
+-------  ----------------   ----------
+1        Mumbai Indians     John Wright
+2        Chennai Super Kings Stephen Fleming
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE player_id IN (
+    SELECT player_id
+    FROM picked
+    WHERE fantasy_id IN (
+        SELECT fantasy_id
+        FROM fantasy_11
+        WHERE total_credit < 100
+    )
+);
+
+FIRST_NAME  LAST_NAME
+----------  ----------
+Virat       Kohli
+
+
+SQL> SELECT *
+FROM matches
+WHERE match_fee > (
+    SELECT AVG(match_fee)
+    FROM matches
+);
+
+MATCH_ID  MATCH_VENUE        MATCH_FEE
+--------  -----------------  ----------
+1         Wankhede Stadium   600
+2         Eden Gardens       700
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE player_id IN (
+    SELECT player_id
+    FROM player_records
+    WHERE records = 'Runs'
+);
+
+FIRST_NAME  LAST_NAME
+----------  ----------
+Virat       Kohli
+Rohit       Sharma
+
+
+SQL> SELECT team_name
+FROM teams
+WHERE team_id IN (
+    SELECT team_id
+    FROM coaches
+    WHERE coach_name = 'John Wright'
+);
+
+TEAM_NAME
+---------
+Mumbai Indians
+
+
+SQL> SELECT fantasy_name
+FROM fantasy_11
+WHERE fantasy_id IN (
+    SELECT fantasy_id
+    FROM picked
+    WHERE player_id = (
+        SELECT mvp
+        FROM fantasy_11
+        WHERE fantasy_11.fantasy_id = picked.fantasy_id
+    )
+    AND player_id = (
+        SELECT captain
+        FROM fantasy_11
+        WHERE fantasy_11.fantasy_id = picked.fantasy_id
+    )
+);
+
+FANTASY_NAME
+------------
+Fantasy Team 1
+
+
+SQL> SELECT customer_name
+FROM customer
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM customer_phone_number
+    WHERE rating_provided = 5
+);
+
+CUSTOMER_NAME
+-------------
+Akash
+
+
+SQL> SELECT *
+FROM matches
+WHERE audience_count > (
+    SELECT AVG(audience_count)
+    FROM matches
+);
+
+MATCH_ID  MATCH_VENUE         AUDIENCE_COUNT
+--------  ------------------  --------------
+2         Eden Gardens        50000
+
+
+SQL> SELECT team_name
+FROM teams
+WHERE match_id IN (
+    SELECT match_id
+    FROM matches
+    WHERE ticket_fee > 500
+);
+
+TEAM_NAME
+---------
+Mumbai Indians
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE player_id IN (
+    SELECT player_id
+    FROM plays
+    WHERE team_id IN (
+        SELECT team_id
+        FROM teams
+        WHERE match_id IN (
+            SELECT match_id
+            FROM matches
+            WHERE match_type = 'Test'
+        )
+    )
+);
+
+FIRST_NAME  LAST_NAME
+----------  ----------
+Virat       Kohli
+
+
+SQL> SELECT *
+FROM balls
+WHERE runs > (
+    SELECT AVG(runs)
+    FROM balls
+);
+
+BALL_ID  RUNS
+-------  ----
+1        6
+2        4
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE jersey_number < 10
+AND player_id IN (
+    SELECT player_id
+    FROM picked
+);
+
+FIRST_NAME  LAST_NAME
+----------  ----------
+Virat       Kohli
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE player_id NOT IN (
+    SELECT player_id
+    FROM picked
+);
+
+FIRST_NAME  LAST_NAME
+----------  ----------
+David       Warner
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE player_id NOT IN (
+    SELECT player_id
+    FROM plays
+    WHERE team_id = (
+        SELECT team_id
+        FROM teams
+        WHERE team_name = 'Mumbai Indians'
+    )
+);
+
+FIRST_NAME  LAST_NAME
+----------  ----------
+David       Warner
+
+
+SQL> SELECT fantasy_name
+FROM fantasy_11
+WHERE total_credit > (
+    SELECT SUM("100_c" + "50_c" + runs_c + wickets_c + "4_c" + "6_c" + catch_c + run_out_c + stumping_c)
+    FROM credit
+    WHERE credit_id IN (
+        SELECT credit_id
+        FROM player
+        WHERE player_id IN (
+            SELECT player_id
+            FROM picked
+            WHERE fantasy_id = fantasy_11.fantasy_id
+        )
+    )
+);
+
+FANTASY_NAME
+------------
+Fantasy Team 1
+
+
+SQL> SELECT MAX(runrate) AS highest_run_rate
+FROM scorecard;
+
+HIGHEST_RUN_RATE
+----------------
+36.0
+
+
+SQL> SELECT *
+FROM overlay
+WHERE run_rate > (
+    SELECT AVG(run_rate)
+    FROM overlay
+);
+
+OVERLAY_ID  RUN_RATE
+----------  --------
+1           8.5
+2           9.0
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE dominant_arm = 'Right'
+AND player_id IN (
+    SELECT player_id
+    FROM player_records
+    WHERE records = 'Runs' AND runs > 100
+);
+
+FIRST_NAME  LAST_NAME
+----------  ----------
+Virat       Kohli
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE player_id IN (
+    SELECT player_id
+    FROM picked
+    WHERE fantasy_id = (
+        SELECT fantasy_id
+        FROM fantasy_11
+        WHERE fantasy_name = 'Fantasy Team 1'
+    )
+)
+AND credit_id = (
+    SELECT credit_id
+    FROM credit
+    WHERE ("100_c" + "50_c" + runs_c + wickets_c + "4_c" + "6_c" + catch_c + run_out_c + stumping_c) = (
+        SELECT MAX("100_c" + "50_c" + runs_c + wickets_c + "4_c" + "6_c" + catch_c + run_out_c + stumping_c)
+        FROM credit
+    )
+);
+
+FIRST_NAME  LAST_NAME
+----------  ----------
+Virat       Kohli
+
+
+SQL> SELECT team_name
+FROM teams
+WHERE match_id IN (
+    SELECT match_id
+    FROM matches
+    WHERE match_refree = 'Referee A'
+);
+
+TEAM_NAME
+---------
+Mumbai Indians
+
+
+SQL> SELECT customer_name
+FROM customer
+WHERE customer_id IN (
+    SELECT customer_id
+    FROM fantasy_11
+    WHERE match_id IN (
+        SELECT match_id
+        FROM matches
+        WHERE match_type = 'ODI'
+    )
+);
+
+CUSTOMER_NAME
+-------------
+Siva
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE player_id IN (
+    SELECT player_id
+    FROM picked
+    WHERE fantasy_id = (
+        SELECT fantasy_id
+        FROM fantasy_11
+        WHERE fantasy_name = 'Fantasy Team 2'
+    )
+);
+
+FIRST_NAME  LAST NAME
+----------  ----------
+Rohit       Sharma
+
+
+SQL> SELECT first_name, last_name
+FROM player
+WHERE player_id IN (
+    SELECT player_id
+    FROM batsman
+    WHERE runs > ANY (
+        SELECT runs
+        FROM batsman
+    )
+);
+
+FIRST_NAME  LAST NAME
+----------  ----------
+Virat       Kohli
+
+
+SQL> SELECT team_name
+FROM teams
+WHERE match_id IN (
+    SELECT match_id
+    FROM matches
+    WHERE match_fee > ANY (
+        SELECT match_fee
+        FROM matches
+    )
+);
+
+TEAM_NAME
+---------
+Mumbai Indians
+
+
+SQL> WITH CustomerBets AS (
+    SELECT customer_id, bet_amount
+    FROM fantasy_11
+)
+SELECT customer_id, bet_amount
+FROM CustomerBets
+WHERE bet_amount > 500;
+
+CUSTOMER_ID  BET_AMOUNT
+-----------  ----------
+101          600
+102          750
+103          800
+
+
+SQL> SELECT customer_name
+FROM customer c
+WHERE EXISTS (
+    SELECT 1
+    FROM fantasy_11 f
+    WHERE f.customer_id = c.customer_id
+);
+
+CUSTOMER_NAME
+-------------
+Siva
+Venkatesh
+Durai
+
+
+SQL> SELECT first_name, last_name
+FROM player p
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM picked pk
+    WHERE pk.player_id = p.player_id
+);
+
+FIRST_NAME  LAST_NAME
+----------  ----------
+David       Warner
+
+
+SQL> SELECT customer_name
+FROM customer c
+WHERE c.customer_id NOT IN (
+    SELECT customer_id
+    FROM fantasy_11
+    WHERE bet_amount > ALL (
+        SELECT bet_amount
+        FROM fantasy_11
+    )
+);
+
+CUSTOMER_NAME
+-------------
+Siva
+Venkatesh
+
+
+SQL> SELECT DISTINCT customer_name
+FROM customer
+WHERE customer_id IN (
+    SELECT DISTINCT customer_id
+    FROM fantasy_11
+);
+
+CUSTOMER_NAME
+-------------
+Siva
+Venkatesh
+Durai
+
+
+SQL> SELECT customer_name
+FROM customer c
+WHERE EXISTS (
+    SELECT 1
+    FROM (
+        SELECT customer_id
+        FROM fantasy_11
+        GROUP BY customer_id
+        HAVING COUNT(*) > 1
+    ) f
+    WHERE f.customer_id = c.customer_id
+);
+
+CUSTOMER_NAME
+-------------
+Siva
+
+
+SQL> SELECT DISTINCT first_name, last_name
+FROM player;
+
+FIRST_NAME  LAST NAME
+----------  ----------
+Virat       Kohli
+Rohit       Sharma
+MS          Dhoni
+Jasprit     Bumrah
+
+
+SQL> SELECT first_name, last_name
+FROM player p
+WHERE EXISTS (
+    SELECT 1
+    FROM (
+        SELECT player_id
+        FROM picked
+        GROUP BY player_id
+        HAVING COUNT(*) > 1
+    ) picked pk
+    WHERE pk.player_id = p.player_id
+);
+
+FIRST_NAME  LAST NAME
+----------  ----------
+Virat       Kohli
+
+
+SQL> SELECT team_name
+FROM teams t
+JOIN plays p ON t.team_id = p.team_id
+GROUP BY t.team_name
+HAVING COUNT(p.match_id) > 3
+AND AVG(p.match_fee) > (
+    SELECT AVG(match_fee)
+    FROM matches
+);
+
+TEAM_NAME
+---------
+Mumbai Indians
+Chennai Super Kings
+
+
+
+
+
+[23bcs112@mepcolinux dbms]$exit
+exit

@@ -1,0 +1,67 @@
+[23bcs112@mepcolinux dbms]$cat ex6.prn
+Script started on Tue 25 Feb 2025 10:54:26 AM IST
+[23bcs112@mepcolinux dbms]$cat ex6.txt
+CREATE VIEW customer_bets AS
+SELECT c.customer_id, c.customer_name, f.bet_amount, f.fantasy_name, f.price_amount
+FROM customer c
+NATURAL JOIN fantasy_11 f;
+
+SQL> SELECT * FROM customer_bets;
+
+CUSTOMER_ID  CUSTOMER_NAME  BET_AMOUNT  FANTASY_NAME  PRICE_AMOUNT
+-----------  -------------  ----------  ------------  -------------
+1            Siva           600         Team A        1000
+2            Venkatesh      750         Team B        1200
+3            Durai          800         Team C        1500
+
+
+CREATE VIEW match_details AS
+SELECT m.match_id, m.match_venue, m.match_time, t.team_name, t.coach_name
+FROM matches m
+NATURAL JOIN teams t;
+
+SQL> SELECT * FROM match_details;
+
+MATCH_ID  MATCH_VENUE        MATCH_TIME           TEAM_NAME         COACH_NAME
+--------  -----------------  -------------------  ---------------   -------------
+101       Wankhede Stadium   2023-04-21 15:30:00  Mumbai Indians    John Wright
+102       Eden Gardens       2023-04-23 20:00:00  Chennai Super Kings Stephen Fleming
+
+
+CREATE VIEW player_performance AS
+SELECT p.player_id, p.first_name, p.last_name, pr.records
+FROM player p
+NATURAL JOIN player_records pr;
+
+SQL> SELECT * FROM player_performance;
+
+PLAYER_ID  FIRST_NAME  LAST_NAME  RECORDS
+---------  ----------  ---------  -------
+1          Virat       Kohli      Runs
+2          Rohit       Sharma     Runs
+3          Jasprit     Bumrah     Wickets
+
+
+
+
+CREATE UNIQUE INDEX idx_customer_id ON customer(customer_id);
+
+
+CREATE INDEX idx_customer_name ON customer(customer_name);
+
+
+CREATE UNIQUE INDEX idx_match_id ON matches(match_id);
+
+CREATE INDEX idx_match_venue ON matches(match_venue);
+
+
+CREATE UNIQUE INDEX idx_player_id ON player(player_id);
+
+
+CREATE INDEX idx_player_last_name ON player(last_name);
+
+[23bcs112@mepcolinux dbms]$exit
+exit
+
+Script done on Tue 25 Feb 2025 10:54:35 AM IST
+[23bcs112@mepcolinux dbms]$
