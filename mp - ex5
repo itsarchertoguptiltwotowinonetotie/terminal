@@ -1,0 +1,207 @@
+[23bcs112@mepcolinux ex5]$cat ex5.prn
+Script started on Fri 04 Apr 2025 02:37:12 PM IST
+[23bcs112@mepcolinux ex5]$cat ex5.txt
+============================================================================================================
+                        EX-5: INTERFACING OF ANALOG TO DIGITAL AND DIGITAL TO ANALOG CONVERTERS
+                        NAMES: POTHIRAJU P V, SIVA PRAKASH S
+                        ROLL NUMBERS: 23BCS112, 23BCS118
+============================================================================================================
+
+PROGRAM 1: ANALOG TO DIGITAL
+
+        OUTPUT 2500AD
+.ORG 4000H
+CODE SEGMENT
+        ASSUME CS:CODE
+        MOV AL,98H
+        MOV DX,FFE6H
+        OUT DX,AL
+        MOV AL,00H
+L2:     MOV DX,FFE4H
+        OUT DX,AL
+        MOV AL,00H
+        MOV DX,FFE2H
+        OUT DX,AL
+        MOV AL,02H
+        MOV DX,FFE4H
+        OUT DX,AL
+        MOV AL,03H
+        MOV DX,FFE4H
+        OUT DX,AL
+        MOV AL,01H
+        MOV DX,FFE4H
+        OUT DX,AL
+        MOV AL,00H
+        MOV DX,FFE4H
+        OUT DX,AL
+L1:     MOV DX,FFE4H
+        IN AL,DX
+        CMP AL,7FH
+        JC L1
+        MOV AL,04H
+        MOV DX,FFE4H
+        OUT DX,AL
+        MOV DX,FFE0H
+        IN AL,DX
+        MOV BL,00H
+        MOV BH,00H
+        DB 9AH,12H,0BH,00H,FFH
+        JMP L2
+CODE ENDS
+
+-------------------------------------------------------------------------------------------------------------
+
+PROGRAM 2: DIGITAL TO ANALOG (SQUARE WAVE)
+
+                OUTPUT 2500AD
+.ORG 3000H
+CODE SEGMENT
+        ASSUME CS:CODE
+        MOV AL,80H
+        MOV DX,FFE6H
+        OUT DX,AL
+REPEAT: MOV AL,FFH
+        MOV DX,FFE0H
+        OUT DX,AL
+        CALL DELAY
+        MOV AL,00H
+        MOV DX,FFE0H
+        OUT DX,AL
+        CALL DELAY
+        JMP REPEAT
+DELAY:  MOV AH,10H
+L3:     MOV BX,0410H
+L6:     DEC BX
+        JNZ L6
+        DEC AH
+        JNZ L3
+        RET
+CODE ENDS
+
+-------------------------------------------------------------------------------------------------------------
+
+PROGRAM 3: DIGITAL TO ANALOG (TRIANGULAR WAVE)
+
+        OUTPUT 2500AD
+.ORG 5000H
+CODE SEGMENT
+        ASSUME CS:CODE
+        MOV AL,80H
+        MOV DX,FFE6H
+        OUT DX,AL
+REPEAT: MOV AL,00H
+L1:     MOV DX,FFE0H
+        OUT DX,AL
+        INC AL
+        CMP AL,FFH
+        JNZ L1
+
+L2:     DEC AL
+        OUT DX,AL
+        CMP AL,00H
+        JNZ L2
+        JMP REPEAT
+        CALL DELAY
+
+DELAY:  MOV AH,10H
+L3:     MOV BX,0410H
+L4:     DEC BX
+        JNZ L4
+        DEC AH
+        JNZ L3
+        RET
+
+CODE ENDS
+END
+
+-------------------------------------------------------------------------------------------------------------
+
+PROGRAM 4: DIGITAL TO ANALOG (SINE WAVE)
+
+        OUTPUT 2500AD
+.ORG 5000H
+DATA SEGMENT
+SIN DB 80H,8BH,96H,A1H,ABH,B6H,C0H,C9H,D2H,DAH,E1H,E8H,EEH,F4H,F7H,FBH,FDH,FEH,FFH
+COUNT DB 13H
+DATA ENDS
+CODE SEGMENT
+        ASSUME CS:CODE,DS:DATA
+        MOV AX,DATA
+        MOV DS,AX
+        MOV AL,80H
+        MOV DX,FFE6H
+        OUT DX,AL
+REPEAT: LEA SI,SIN
+        MOV CL,COUNT
+L1:     MOV AL,[SI]
+        MOV DX,FFE0H
+        OUT DX,AL
+        INC SI
+        DEC CL
+        JNZ L1
+        MOV CL,COUNT
+L2:     MOV AL,[SI]
+        MOV DX,FFE0H
+        OUT DX,AL
+        DEC SI
+        DEC CL
+        JNZ L2
+        MOV CL,COUNT
+L3:     MOV AL,[SI]
+        NEG AL
+        MOV DX,FFE0H
+        OUT DX,AL
+        INC SI
+        DEC CL
+        JNZ L3
+        MOV CL,COUNT
+L4:     MOV AL,[SI]
+        NEG AL
+        MOV DX,FFE0H
+        OUT DX,AL
+        DEC SI
+        DEC CL
+        JNZ L4
+        JMP REPEAT
+CODE ENDS
+
+-------------------------------------------------------------------------------------------------------------
+
+PROGRAM 5: ANALOG TO DIGITAL (RAMP WAVE)
+
+        OUTPUT 2500AD
+.ORG 5000H
+CODE SEGMENT
+        ASSUME CS:CODE
+        MOV AL,80H
+        MOV DX,FFE6H
+        OUT DX,AL
+        MOV AL,80H
+        MOV DX,FFE0H
+        OUT DX,AL
+REPEAT: MOV AL,00H
+L1:     MOV DX,FFE0H
+        OUT DX,AL
+        INC AL
+        CMP AL,FFH
+        JNZ L1
+        MOV AL,00H
+        MOV DX,FFE0H
+        OUT DX,AL
+        MOV AL,00H
+L2:     MOV DX,FFE0H
+        OUT DX,AL
+        INC AL
+        CMP AL,FFH
+        JNZ L2
+        MOV AL,00H
+        MOV DX,FFE0H
+        OUT DX,AL
+        JMP REPEAT
+CODE ENDS
+
+[23bcs112@mepcolinux ex5]$exit
+exit
+
+Script done on Fri 04 Apr 2025 02:37:20 PM IST
+[23bcs112@mepcolinux ex5]$cd ..
