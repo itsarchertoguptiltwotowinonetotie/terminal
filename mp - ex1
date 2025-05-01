@@ -1,0 +1,141 @@
+[23bcs112@mepcolinux ex1]$cat ex1.prn
+Script started on Fri 31 Jan 2025 04:38:11 PM IST
+[23bcs112@mepcolinux ex1]$cat *
+                                EXERCISE - 1 : ARITHMETIC OPERATIONS IN 8086
+DATE : 24/01/2025
+=================================================================================
+NAME :  SIVA PRAKASH S, 23BCS118
+        POTHIRAJU P V, 23BCS112
+=================================================================================
+
+1)16-BIT ADDITION
+
+        OUTPUT 2500AD
+.ORG 5000H
+DATA SEGMENT
+NUM1 DW 4444H
+NUM2 DW 3333H
+SUM DW 0000H
+CARRY DB 00H
+DATA ENDS
+CODE SEGMENT
+        ASSUME CS: CODE,DS: DATA
+        MOV AX,DATA
+        MOV DS,AX
+        MOV AX,NUM1
+        MOV BX,NUM2
+        MOV CL,00H
+        ADD AX,BX
+        JNC L1
+        INC CL
+L1:     MOV SUM,AX
+        MOV CARRY,CL
+CODE ENDS
+----------------------------------------------------------------------------------
+2)16-BIT SUBTRACTION
+
+        OUTPUT 2500AD
+.ORG 5000H
+DATA SEGMENT
+NUM1 DW 1111H
+NUM2 DW 2000H
+DIFF DW 0000H
+BORROW DB 00H
+DATA ENDS
+
+CODE SEGMENT
+        ASSUME CS:CODE,DS:DATA
+        MOV AX,DATA
+        MOV DS,AX
+        MOV AX,NUM1
+        MOV BX,NUM2
+        MOV CL,00H
+        SUB AX,BX
+        JNC L1
+        INC CL
+L1:     MOV DIFF,AX
+        MOV BORROW,CL
+CODE ENDS
+-----------------------------------------------------------------------------------
+3)16-BIT MULTIPLICATION
+
+        OUTPUT 2500AD
+.ORG 5000H
+DATA SEGMENT
+NUM1 DW 1111H
+NUM2 DW 2222H
+LSB DW 0000H
+MSB DW 0000H
+DATA ENDS
+
+CODE SEGMENT
+        ASSUME CS:CODE,DS:DATA
+        MOV AX,DATA
+        MOV DS,AX
+        MOV AX,NUM1
+        MOV BX,NUM2
+        MUL BX
+        MOV LSB,AX
+        MOV MSB,DX
+CODE ENDS
+-----------------------------------------------------------------------------------
+4)16-BIT DIVISION
+
+        OUTPUT 2500AD
+.ORG 5000H
+DATA SEGMENT
+NUM1 DW 2222H
+NUM2 DW 0013H
+QUO DW 0000H
+REM DW 0000H
+DATA ENDS
+
+CODE SEGMENT
+        ASSUME CS:CODE,DS:DATA
+        MOV DX,0000H
+        MOV AX,NUM1
+        MOV BX,NUM2
+        DIV BX
+        MOV QUO,AX
+        MOV REM,DX
+CODE ENDS
+-----------------------------------------------------------------------------------
+5)(A+B+C)/3
+
+        OUTPUT 2500AD
+.ORG 5000H
+DATA SEGMENT
+NUM1 DB 77H
+NUM2 DB 55H
+NUM3 DB 22H
+SUM DB 00H
+CARRY DB 00H
+QUO DW 0000H
+REM DW 0000H
+DATA ENDS
+CODE SEGMENT
+        ASSUME CS: CODE,DS: DATA
+        MOV AX,DATA
+        MOV DS,AX
+        MOV AL,NUM1
+        MOV BL,NUM2
+        MOV CL,00H
+        ADD AL,BL
+        MOV SUM,AL
+        MOV AL,NUM3
+        MOV BL,SUM
+        ADD AL,BL
+        MOV CARRY,AH
+        MOV SUM,AL
+        MOV AL,SUM
+        MOV BL,03H
+        DIV BL
+        MOV QUO,AL
+        MOV REM,AH
+CODE ENDS
+-------------------------------------------------------------------------------------
+[23bcs112@mepcolinux ex1]$exit
+exit
+
+Script done on Fri 31 Jan 2025 04:38:17 PM IST
+[23bcs112@mepcolinux ex1]$cd ..
