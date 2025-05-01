@@ -1,0 +1,96 @@
+[23bcs112@mepcolinux ex4]$cat ex4.prn
+Script started on Fri 14 Mar 2025 04:43:14 PM IST
+[23bcs112@mepcolinux ex4]$cat *
+                                EXERCISE - 4 : 7 SEGMENT LED IN 8086
+DATE : 13/03/2025
+=================================================================================
+NAME :  SIVA PRAKASH S, 23BCS118
+        POTHIRAJU P V, 23BCS112
+=================================================================================
+
+                OUTPUT 2500AD
+.ORG 2000H
+DATA SEGMENT
+LED DB 3FH,06H,5BH,4FH,66H,6DH,7DH,07H,7FH,6FH,77H,7CH,39H,5EH,79H,71H
+COUNT DB 10H
+DATA ENDS
+CODE SEGMENT
+        ASSUME CS:CODE,DS:DATA
+        MOV AX,DATA
+        MOV DS,AX
+        MOV DX,FFE6H
+        MOV AL,80H
+        OUT DX,AL
+REPEAT: LEA SI,LED
+        MOV CL,COUNT
+L1:     MOV AL,[SI]
+        NOT AL
+        MOV DX,FFE0H
+        OUT DX,AL
+        CALL DELAY
+        INC SI
+        DEC CL
+        JNZ L1
+        JMP REPEAT
+DELAY:  MOV AH,15H
+L3:     MOV BX,AAAAH
+L2:     DEC BX
+        JNZ L2
+        DEC AH
+        JNZ L3
+        RET
+CODE ENDS
+END
+-----------------------------------------------
+    OUTPUT 2500AD
+.ORG 2000H
+DATA SEGMENT
+COUNT DB 10H
+DATA ENDS
+CODE SEGMENT
+        ASSUME CS:CODE,DS:DATA
+        MOV AX,DATA
+        MOV DS,AX
+        MOV DX,FFE6H
+        MOV AL,80H
+        OUT DX,AL
+L1:     MOV AL,39H
+        NOT AL
+        MOV DX,FFE0H
+        OUT DX,AL
+        MOV AL,6DH
+        MOV DX,FFE2H
+        OUT DX,AL
+        CALL DELAY
+        MOV AL,00H
+        NOT AL
+        MOV DX,FFE0H
+        OUT DX,AL
+        MOV AL,00H
+        MOV DX,FFE2H
+        OUT DX,AL
+        CALL DELAY
+        MOV AL,39H
+        NOT AL
+        MOV DX,FFE0H
+        OUT DX,AL
+        MOV AL,6DH
+        MOV DX,FFE2H
+        OUT DX,AL
+        CALL DELAY
+REPEAT: JMP L1
+        JMP REPEAT
+DELAY:  MOV AH,09H
+L4:     MOV BX,AAAAH
+L3:     DEC BX
+        JNZ L3
+        DEC AH
+        JNZ L4
+        RET
+CODE ENDS
+END
+[23bcs112@mepcolinux ex4]$exit
+exit
+
+Script done on Fri 14 Mar 2025 04:43:22 PM IST
+[23bcs112@mepcolinux ex4]$cd ..
