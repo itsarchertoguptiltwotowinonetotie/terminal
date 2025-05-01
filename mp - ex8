@@ -1,0 +1,154 @@
+[23bcs112@mepcolinux ex8]$cat ex8.prn
+Script started on Fri 25 Apr 2025 03:27:07 PM IST
+[23bcs112@mepcolinux ex8]$cat ex8.txt
+1.8 BIT ADDITION
+
+.ORG8000H
+CODE SEGMENT
+        ASSUME CS:CODE
+        MOV DPTR,#9000H
+        MOVX A,@DPTR;N1
+        MOV R0,#00H;CARRY
+        INC DPTR
+        MOV R1,A
+        MOV A,@DPTR;N2
+        ADD A,R1
+        JNC L1
+        INC R0
+L1:     INC DPTR
+        MOVX @DPTR,A;SUM
+        INC DPTR
+        MOV A,R0;CARRY
+        MOVX @DPTR,A
+L2:     SJMP L2
+
+
+2.8 BIT SUBRACTION
+
+.ORG 8000H
+        MOV DPTR,#9000H
+        MOVX A,@DPTR;N1
+        MOV R0,#00H
+        INC DPTR
+        MOV R1,A
+        MOVX A,@DPTR;N2
+        CLR C
+        SUBB A,R1
+        JNC L1
+        INC R0
+L1:     INC DPTR
+        MOVX @DPTR,A;DIFF
+        INC DPTR
+        MOV A,R0
+        MOVX @DPTR,A;BORROW
+L2:     SJMP L2
+
+
+3. 8 BIT MULTIPLICATION
+
+.ORG 8000H
+        MOV DPTR,#9000H
+        MOVX A,@DPTR;MULTIPLICAND
+        MOV B,A
+        INC DPTR
+        MOV R1,A
+        MOVX A,@DPTR;MULTIPLIER
+        MUL AB
+        INC DPTR
+        MOVX @DPTR,A;LSB
+        INC DPTR
+        MOV A,B
+        MOVX @DPTR,A;MSB
+L2:     SJMP L2
+
+
+4. 8 BIT DIVISION
+
+.ORG 8000H
+        MOV DPTR,#9000H
+        MOVX A,@DPTR;DIVISOR
+        MOV B,A
+        INC DPTR
+        MOV R1,A
+        MOVX A,@DPTR;DIVIDEND
+        DIV AB
+        INC DPTR
+        MOVX @DPTR,A;QUO
+        INC DPTR
+        MOV A,B
+        MOVX @DPTR,A;REM
+L2:     SJMP L2
+
+
+5. 16 BIT ADDITION
+
+.ORG 8000H
+        MOV DPTR,#9000H
+        MOVX A,@DPTR;LSB1
+        MOV R0,A
+        MOV R2,#00H;CARRY
+        INC DPTR
+        MOVX A,@DPTR;MSB1
+        MOV R1,A
+        INC DPTR
+        MOVX A,@DPTR;LSB2
+        ADD A,R0
+        MOV R3,A
+        INC DPTR
+        MOVX A,@DPTR;MSB2
+        ADD A,R1
+        MOV R4,A
+        JNC L1
+        INC R2
+L1:     INC DPTR
+        MOV A,R3
+        MOVX @DPTR,A;LSB SUM
+        INC DPTR
+        MOV A,R4
+        MOVX @DPTR,A;MSBSUM
+        INC DPTR
+        MOV A,R2
+        MOVX @DPTR,A;CARRY
+L2:     SJMP L2
+
+
+6. 16 BIT SUBRACTION
+
+.ORG 8000H
+        MOV DPTR,#9000H
+        MOVX A,@DPTR;LSB1
+        MOV R0,A
+        MOV R2,#00H;CARRY
+        INC DPTR
+        MOVX A,@DPTR;MSB1
+        MOV R1,A
+        INC DPTR
+        MOVX A,@DPTR;LSB2
+        CLR C
+        SUBB A,R0
+        MOV R3,A
+        INC DPTR
+        MOVX A,@DPTR;MSB2
+        CLR C
+        SUBB A,R1
+        MOV R4,A
+        JNC L1
+        INC R2
+L1:     INC DPTR
+        MOV A,R3
+        MOVX @DPTR,A;LSB SUM
+        INC DPTR
+        MOV A,R4
+        MOVX @DPTR,A;MSBSUM
+        INC DPTR
+        MOV A,R2
+        MOVX @DPTR,A;CARRY
+L2:     SJMP L2
+
+[23bcs112@mepcolinux ex8]$exit
+exit
+
+Script done on Fri 25 Apr 2025 03:27:22 PM IST
+[23bcs112@mepcolinux ex8]$ls
+ex8.prn  ex8.txt
+[23bcs112@mepcolinux ex8]$cd ..
