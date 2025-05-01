@@ -1,0 +1,69 @@
+$cat exp6.prn
+Script started on Fri 21 Mar 2025 03:49:33 PM IST
+[23bcs112@mepcolinux ex6]$cat exp6.txt
+cat: exp6.txt: No such file or directory
+[23bcs112@mepcolinux ex6]$cat ex6.txt
+                          EXERCISE - 6 : Stepper Motor IN 8086
+DATE : 21/03/2025
+=================================================================================
+NAME :  SIVA PRAKASH S, 23BCS118
+        POTHIRAJU P V, 23BCS112
+=================================================================================
+                        OUTPUT 2500AD
+.ORG 2000H
+DATA SEGMENT
+VAL DB 08H,04H,02H,01H
+VAL1 DB 01H,02H,04H,08H
+DATA ENDS
+CODE SEGMENT
+        ASSUME CS:CODE,DS:DATA
+        MOV AX,DATA
+        MOV DS,AX
+        MOV AL,80H
+        MOV DX,FFE6H
+        OUT DX,AL
+        MOV CH,19H
+LA:     MOV CL,04H
+        LEA SI,VAL
+LB:     MOV AL,[SI]
+        MOV DX,FFE0H
+        OUT DX,AL
+        CALL DELAY
+        INC SI
+        DEC CL
+        JNZ LB
+        DEC CH
+        JNZ LA
+        MOV CH,0CH
+LA1:    MOV CL,04H
+        LEA DI,VAL1
+LB1:    MOV AL,[DI]
+        MOV DX,FFE0H
+        OUT DX,AL
+        CALL DELAY
+        INC DI
+        DEC CL
+        JNZ LB1
+        DEC CH
+        JNZ LA1
+        MOV AL,01H
+        OUT DX,AL
+        CALL DELAY
+        MOV AL,02H
+        OUT DX,AL
+        CALL DELAY
+DELAY:
+L3:     MOV BX,BBBBH
+L2:     DEC BX
+        JNZ L2
+        RET
+EXIT:   HLT
+CODE ENDS
+END
+
+
+[23bcs112@mepcolinux ex6]$exit
+exit
+
+Script done on Fri 21 Mar 2025 03:49:58 PM IST
+[23bcs112@mepcolinux ex6]$cd ..
