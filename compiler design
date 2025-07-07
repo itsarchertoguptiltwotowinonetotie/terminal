@@ -1,0 +1,549 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+// ---------------------------------------------------------------------------
+// 1. Infix to Postfix Conversion
+// ---------------------------------------------------------------------------
+#define MAX_REGEX_LENGTH 1024
+
+// Stack for operators
+typedef struct {
+    char data[MAX_REGEX_LENGTH];
+    int top;
+} StackChar;
+
+void pushChar(StackChar* stack, char c) {
+    stack->data[++stack->top] = c;
+}
+
+char popChar(StackChar* stack) {
+    return stack->data[stack->top--];
+}
+
+char peekChar(StackChar* stack) {
+    return (stack->top == -1) ? '\0' : stack->data[stack->top];
+}
+
+// Operator precedence helper
+int precedence(char op) {
+    switch (op) {
+        case '*': return 3; // highest
+        case '.': return 2; // explicit concat (sometimes we insert '.' in code)
+        case '|': return 1; // union
+        case '(': return 0;
+    }
+    return -1;
+}
+
+// Convert infix regex to postfix
+// Supports: a-z, |, *, parentheses ( ), and implicit concatenation.
+void infixToPostfix(const char* regex, char* postfix) {
+    StackChar stack;
+    stack.top = -1;
+    int idx = 0;
+    int len = strlen(regex);
+    int outIndex = 0;
+
+    // Helper to insert an explicit concat operator '.' between consecutive elements if needed.
+    // We'll build a new string with '.' inserted, then convert that to postfix.
+    char tmp[MAX_REGEX_LENGTH * 2];
+    memset(tmp, 0, sizeof(tmp));
+    int tIndex = 0;
+
+    for (int i = 0; i < len; i++) {
+        char c = regex[i];
+        tmp[tIndex++] = c;
+        // Insert a '.' if:
+        // 1) c is not '|' and not '('
+        // 2) next char is not '|' and not ')' and not '*'
+        if (i < len - 1) {
+            char d = regex[i + 1];
+            if (c != '|' && c != '(' && d != '|' && d != ')' && d != '*') {
+                tmp[tIndex++] = '.';
+            }
+        }
+    }
+    tmp[tIndex] = '\0';
+
+    // Actual conversion to postfix using the modified string
+    while (tmp[idx] != '\0') {
+        char c = tmp[idx++];
+        if (isalnum(c)) {
+            // If alphanumeric, add to output
+            postfix[outIndex++] = c;
+        } else if (c == '(') {
+            pushChar(&stack, c);
+        } else if (c == ')') {
+            // Pop until '('
+            while (peekChar(&stack) != '(') {
+                postfix[outIndex++] = popChar(&stack);
+            }
+            popChar(&stack); // remove '('
+        } else {
+            // Operator
+            while (stack.top != -1 && precedence(peekChar(&stack)) >= precedence(c)) {
+                postfix[outIndex++] = popChar(&stack);
+            }
+            pushChar(&stack, c);
+        }
+    }
+
+    // Pop any remaining operators
+    while (stack.top != -1) {
+        postfix[outIndex++] = popChar(&stack);
+    }
+    postfix[outIndex] = '\0';
+}
+
+// ---------------------------------------------------------------------------
+// 2. Thompson's Construction for building an NFA
+// ---------------------------------------------------------------------------
+
+// We'll represent each NFA state as an index in an array, with transitions
+// for each character, plus up to two epsilon transitions.
+
+#define EPSILON -1
+#define MAX_STATES 1024
+#define MAX_CHAR   128
+
+typedef struct {
+    int next1;      // next state for this transition
+    int next2;      // second path if it's an epsilon
+    char c;         // character on this transition (EPSILON if epsilon transition)
+} NFAState;
+
+typedef struct {
+    NFAState states[MAX_STATES];
+    int start;
+    int accept;
+    int count; // number of states used
+} NFA;
+
+// A structure to hold partial NFA fragments
+typedef struct Fragment {
+    int start;
+    int out[2];
+} Fragment;
+
+// For tracking the "patch locations" (like a linked list of state->next?)
+void patch(NFA* nfa, int* out, int s) {
+    // out[] could have up to two state references that need to point to s
+    for (int i = 0; i < 2; i++) {
+        if (out[i] < 0) break;
+        nfa->states[out[i]].next1 = s;
+    }
+}
+
+// Create a new state in the NFA
+int newState(NFA* nfa, char c, int next1, int next2) {
+    int idx = nfa->count++;
+    nfa->states[idx].c = c;
+    nfa->states[idx].next1 = next1;
+    nfa->states[idx].next2 = next2;
+    return idx;
+}
+
+// Make a fragment from a single state
+Fragment createFragment(int start, int out1, int out2) {
+    Fragment f;
+    f.start = start;
+    f.out[0] = out1;
+    f.out[1] = out2;
+    return f;
+}
+
+// Helper stack for building NFA
+typedef struct {
+    Fragment data[MAX_REGEX_LENGTH];
+    int top;
+} StackFrag;
+
+void pushFrag(StackFrag* stack, Fragment f) {
+    stack->data[++stack->top] = f;
+}
+
+Fragment popFrag(StackFrag* stack) {
+    return stack->data[stack->top--];
+}
+
+// Build an NFA from a postfix regex using Thompson's construction
+NFA buildNFA(const char* postfix) {
+    NFA nfa;
+    nfa.count = 0;
+    nfa.start = -1;
+    nfa.accept = -1;
+
+    StackFrag stack;
+    stack.top = -1;
+
+    int length = strlen(postfix);
+
+    for (int i = 0; i < length; i++) {
+        char c = postfix[i];
+        if (isalnum(c)) {
+            // single char transition
+            int s = newState(&nfa, c, -1, -1);
+            int e = newState(&nfa, EPSILON, -1, -1);
+
+            // link s -> e via next1
+            nfa.states[s].next1 = e;
+
+            Fragment f = createFragment(s, &nfa.states[s].next1 - nfa.states[0].next1, -1);
+            // Instead of pointer arithmetic, we'll store actual indices in out[]:
+            f.out[0] = s; // We'll patch nfa.states[s].next1 to e
+            f.out[1] = -1;
+
+            // Actually we can store the location that needs patching differently:
+            // Let's keep it simpler: Out points to the index of the next1 in the state array
+            // We'll finalize by setting out manually right after creation each time:
+            f.start = s;
+            f.out[0] = s; // We'll store s, meaning "the transition from s"
+            f.out[1] = -1;
+
+            // patch s's next1 with e
+            nfa.states[s].next1 = e;
+
+            pushFrag(&stack, f);
+        }
+        else if (c == '.') {
+            // concatenation
+            Fragment f2 = popFrag(&stack);
+            Fragment f1 = popFrag(&stack);
+            // patch f1.out to f2.start
+            patch(&nfa, f1.out, f2.start);
+            // new fragment from f1.start to f2.out
+            Fragment newF;
+            newF.start = f1.start;
+            newF.out[0] = f2.out[0];
+            newF.out[1] = f2.out[1];
+            pushFrag(&stack, newF);
+        }
+        else if (c == '|') {
+            // alternation
+            Fragment f2 = popFrag(&stack);
+            Fragment f1 = popFrag(&stack);
+            int s = newState(&nfa, EPSILON, f1.start, f2.start);
+            int e = newState(&nfa, EPSILON, -1, -1);
+
+            // patch the out of f1 and f2 to e
+            patch(&nfa, f1.out, e);
+            patch(&nfa, f2.out, e);
+
+            // new fragment
+            Fragment newF;
+            newF.start = s;
+            newF.out[0] = &nfa.states[s].next2 - nfa.states[0].next1; // not used for direct patch
+            newF.out[1] = -1;
+            // We'll store the final out location so we can patch it later:
+            newF.out[0] = e; 
+            newF.out[1] = -1;
+
+            pushFrag(&stack, newF);
+        }
+        else if (c == '*') {
+            // Kleene star
+            Fragment f = popFrag(&stack);
+            int s = newState(&nfa, EPSILON, f.start, -1);
+            int e = newState(&nfa, EPSILON, -1, -1);
+
+            // patch f.out to s
+            patch(&nfa, f.out, s);
+
+            // new state s also goes to e
+            nfa.states[s].next2 = e;
+
+            Fragment newF;
+            newF.start = s;
+            newF.out[0] = e;
+            newF.out[1] = -1;
+
+            pushFrag(&stack, newF);
+        }
+    }
+
+    // Final fragment on stack
+    Fragment f = popFrag(&stack);
+    nfa.start = f.start;
+    nfa.accept = newState(&nfa, EPSILON, -1, -1);
+    // Patch fragment out to accept
+    patch(&nfa, f.out, nfa.accept);
+
+    return nfa;
+}
+
+// ---------------------------------------------------------------------------
+// 3. Subset Construction (NFA -> DFA)
+// ---------------------------------------------------------------------------
+
+typedef struct {
+    int transitions[MAX_CHAR]; // for each character in [0..127], next DFA state
+    int isAccept;
+} DFAState;
+
+typedef struct {
+    DFAState states[MAX_STATES];
+    int count;
+    int start;
+} DFA;
+
+// We'll keep track of an array of NFA states in a set
+typedef struct {
+    int nfaStates[MAX_STATES];
+    int count;
+} StateSet;
+
+// Functions to add states to a set if not already present
+void addState(StateSet* set, int state) {
+    // check duplicates
+    for (int i = 0; i < set->count; i++) {
+        if (set->nfaStates[i] == state) return;
+    }
+    set->nfaStates[set->count++] = state;
+}
+
+// Epsilon-closure: all states reachable via only epsilon transitions
+void epsilonClosure(const NFA* nfa, StateSet* set) {
+    int changed = 1;
+    while (changed) {
+        changed = 0;
+        for (int i = 0; i < set->count; i++) {
+            int s = set->nfaStates[i];
+            if (s == -1) continue;
+            if (nfa->states[s].c == EPSILON) {
+                // Follow next1
+                if (nfa->states[s].next1 != -1) {
+                    int next = nfa->states[s].next1;
+                    // if not in set, add it
+                    int found = 0;
+                    for (int j = 0; j < set->count; j++) {
+                        if (set->nfaStates[j] == next) {
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        addState(set, next);
+                        changed = 1;
+                    }
+                }
+                // Follow next2
+                if (nfa->states[s].next2 != -1) {
+                    int next = nfa->states[s].next2;
+                    // if not in set, add it
+                    int found = 0;
+                    for (int j = 0; j < set->count; j++) {
+                        if (set->nfaStates[j] == next) {
+                            found = 1;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        addState(set, next);
+                        changed = 1;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Move function: from a set of NFA states, on character c, find all states
+// reachable by that character (ignoring epsilon transitions for the move).
+void moveNFA(const NFA* nfa, const StateSet* fromSet, char c, StateSet* toSet) {
+    toSet->count = 0;
+    memset(toSet->nfaStates, -1, sizeof(toSet->nfaStates));
+    for (int i = 0; i < fromSet->count; i++) {
+        int s = fromSet->nfaStates[i];
+        if (s == -1) continue;
+        if (nfa->states[s].c == c) {
+            // follow next1
+            if (nfa->states[s].next1 != -1) {
+                addState(toSet, nfa->states[s].next1);
+            }
+        }
+    }
+}
+
+// Compare sets
+int sameSet(const StateSet* a, const StateSet* b) {
+    if (a->count != b->count) return 0;
+    for (int i = 0; i < a->count; i++) {
+        int found = 0;
+        for (int j = 0; j < b->count; j++) {
+            if (a->nfaStates[i] == b->nfaStates[j]) {
+                found = 1;
+                break;
+            }
+        }
+        if (!found) return 0;
+    }
+    return 1;
+}
+
+int findSetIndex(StateSet* sets, int setCount, const StateSet* s) {
+    for (int i = 0; i < setCount; i++) {
+        if (sameSet(&sets[i], s)) return i;
+    }
+    return -1;
+}
+
+// Construct the DFA from the given NFA via subset construction
+DFA buildDFA(const NFA* nfa) {
+    DFA dfa;
+    dfa.count = 0;
+    dfa.start = -1;
+    memset(dfa.states, 0, sizeof(dfa.states));
+
+    StateSet stateSets[MAX_STATES]; // track each distinct set of states
+    int setCount = 0;
+    // Create initial set from nfa->start plus epsilon closure
+    StateSet startSet;
+    startSet.count = 0;
+    memset(startSet.nfaStates, -1, sizeof(startSet.nfaStates));
+    addState(&startSet, nfa->start);
+    epsilonClosure(nfa, &startSet);
+
+    // store it
+    stateSets[0] = startSet;
+    setCount = 1;
+
+    // The first DFA state
+    dfa.states[0].isAccept = 0;
+    // check if it contains nfa->accept
+    for (int i = 0; i < startSet.count; i++) {
+        if (startSet.nfaStates[i] == nfa->accept) {
+            dfa.states[0].isAccept = 1;
+            break;
+        }
+    }
+    dfa.start = 0;
+    dfa.count = 1;
+    // We'll store transitions after we find new states
+    // BFS over sets
+    int idx = 0;
+    while (idx < setCount) {
+        // for each possible input character
+        for (int c = 0; c < MAX_CHAR; c++) {
+            // build the next set
+            StateSet nextSet;
+            nextSet.count = 0;
+            memset(nextSet.nfaStates, -1, sizeof(nextSet.nfaStates));
+
+            // compute moveNFA + epsilon closure
+            moveNFA(nfa, &stateSets[idx], (char)c, &nextSet);
+            if (nextSet.count == 0) {
+                dfa.states[idx].transitions[c] = -1; // no transition
+                continue;
+            }
+
+            epsilonClosure(nfa, &nextSet);
+            // see if nextSet already in stateSets
+            int existing = findSetIndex(stateSets, setCount, &nextSet);
+            if (existing == -1) {
+                // new set
+                stateSets[setCount] = nextSet;
+                // check accept
+                dfa.states[setCount].isAccept = 0;
+                for (int i2 = 0; i2 < nextSet.count; i2++) {
+                    if (nextSet.nfaStates[i2] == nfa->accept) {
+                        dfa.states[setCount].isAccept = 1;
+                        break;
+                    }
+                }
+                // transitions will be filled as we go
+                for (int j = 0; j < MAX_CHAR; j++) {
+                    dfa.states[setCount].transitions[j] = -1;
+                }
+                dfa.count++;
+                setCount++;
+                existing = setCount - 1;
+            }
+            // set the DFA transition
+            dfa.states[idx].transitions[c] = existing;
+        }
+        idx++;
+    }
+    return dfa;
+}
+
+// ---------------------------------------------------------------------------
+// 4. Matching with the DFA + Tokenizing the input string
+// ---------------------------------------------------------------------------
+int matchDFA(const DFA* dfa, const char* str, int* matchedLen) {
+    int currentState = dfa->start;
+    int length = 0;
+    int lastAcceptPos = -1;
+    int lastAcceptLen = 0;
+    for (; str[length] != '\0'; length++) {
+        char c = str[length];
+        if (c < 0 || c >= MAX_CHAR) break; // out of range
+        currentState = dfa->states[currentState].transitions[(unsigned char)c];
+        if (currentState < 0) {
+            break;
+        }
+        // if this new state is accept, record position
+        if (dfa->states[currentState].isAccept) {
+            lastAcceptPos = length;
+            lastAcceptLen = length + 1;
+        }
+    }
+    if (lastAcceptPos != -1) {
+        *matchedLen = lastAcceptLen;
+        return 1;
+    }
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+// 5. Main Program: Ties it all together
+// ---------------------------------------------------------------------------
+int main() {
+    char regex[MAX_REGEX_LENGTH];
+    char testStr[MAX_REGEX_LENGTH];
+
+    printf("Enter a regular expression: ");
+    scanf("%s", regex);
+
+    printf("Enter a test string: ");
+    scanf("%s", testStr);
+
+    // 1) Convert infix to postfix
+    char postfix[MAX_REGEX_LENGTH * 2];
+    infixToPostfix(regex, postfix);
+
+    // 2) Build an NFA using Thompson's construction
+    NFA nfa = buildNFA(postfix);
+
+    // 3) Convert the NFA to a DFA using subset construction
+    DFA dfa = buildDFA(&nfa);
+
+    // 4) Use the DFA to tokenize the input string
+    printf("Tokens that match the regex:\n");
+    int index = 0;
+    int len = strlen(testStr);
+
+    while (index < len) {
+        int matchedLen = 0;
+        if (matchDFA(&dfa, &testStr[index], &matchedLen) && matchedLen > 0) {
+            printf("%.*s\n", matchedLen, &testStr[index]);
+            index += matchedLen; 
+        } else {
+            // If no match at this position, move one character ahead
+            index++;
+        }
+    }
+
+    // If you want to check if the entire string is accepted in one go, you can:
+    /*
+    int entireLen = 0;
+    if (matchDFA(&dfa, testStr, &entireLen) && entireLen == strlen(testStr)) {
+        printf("The entire string is accepted by the regex.\n");
+    } else {
+        printf("The entire string is NOT accepted by the regex.\n");
+    }
+    */
+
+    return 0;
+}
